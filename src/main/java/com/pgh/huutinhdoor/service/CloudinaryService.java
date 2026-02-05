@@ -20,7 +20,7 @@ public class CloudinaryService {
             Map result = this.cloudinary.uploader().upload(
                     file.getBytes(),
                     ObjectUtils.asMap(
-                            "folder", "student-management/avatar"
+                            "folder", "huutinhdoor"
                     )
             );
             return result;
