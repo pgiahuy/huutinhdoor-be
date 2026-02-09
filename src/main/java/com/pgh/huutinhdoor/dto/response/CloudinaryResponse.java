@@ -8,4 +8,5 @@ import lombok.Data;
 public class CloudinaryResponse {
     private String secure_url;
     private String public_id;
+    private String message;
 }
