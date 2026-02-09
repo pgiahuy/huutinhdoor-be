@@ -23,7 +23,7 @@ public class UploadController {
             @RequestParam("file") MultipartFile[] files,
             @RequestParam String folder) {
 
-        UploadFolder uploadFolder;
+        UploadFolder  uploadFolder;
         try {
             uploadFolder = UploadFolder.valueOf(folder.toUpperCase());
         } catch (IllegalArgumentException e) {
