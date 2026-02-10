@@ -13,7 +13,9 @@ public class TicketItem {
     @ManyToOne(fetch = FetchType.LAZY)
     private Ticket ticket;
 
-    private Long productId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     private String nameAtTime;
     private Double priceAtTime;

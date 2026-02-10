@@ -9,19 +9,22 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
     private Double price;
+    private Double costPrice;
 
+    private Integer stockQuantity;
 
-    private Integer stock;
+    private String unit;
 
     private Boolean isAvailable = true;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 }

@@ -13,6 +13,7 @@ public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String title;
 
     @Column(columnDefinition = "TEXT")
@@ -20,6 +21,15 @@ public class Project {
 
     private String location;
     private LocalDate completionDate;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ticket_id")
+    private Ticket ticket;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
