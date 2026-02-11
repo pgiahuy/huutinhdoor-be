@@ -35,3 +35,4 @@ build/
 # Config secrets
 src/main/resources/application.properties
 src/main/resources/application.yml
+src/main/resources/note.txt

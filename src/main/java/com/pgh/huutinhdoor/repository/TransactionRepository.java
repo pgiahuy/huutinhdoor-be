@@ -1,0 +1,11 @@
+package com.pgh.huutinhdoor.repository;
+
+import com.pgh.huutinhdoor.entity.Transaction;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+public interface TransactionRepository extends JpaRepository<Transaction, Long> {
+
+    @Query("SELECT SUM(t.amount) FROM Transaction t WHERE t.referenceId = :refId AND t.referenceType = :refType")
+    Double sumAmountByReferenceIdAndType(Long refId, String refType);
+}

@@ -1,7 +1,7 @@
 package com.pgh.huutinhdoor.entity;
 
 import com.pgh.huutinhdoor.enums.TicketStatus;
-import com.pgh.huutinhdoor.enums.PaymentStatus; // Enum mới
+import com.pgh.huutinhdoor.enums.PaymentStatus;
 import com.pgh.huutinhdoor.enums.TicketType;
 import jakarta.persistence.*;
 import lombok.Data;
