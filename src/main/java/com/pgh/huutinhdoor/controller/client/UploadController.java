@@ -1,4 +1,4 @@
-package com.pgh.huutinhdoor.controller;
+package com.pgh.huutinhdoor.controller.client;
 
 import com.pgh.huutinhdoor.dto.response.CloudinaryResponse;
 import com.pgh.huutinhdoor.enums.UploadFolder;

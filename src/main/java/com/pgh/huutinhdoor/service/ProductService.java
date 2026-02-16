@@ -1,12 +1,16 @@
 package com.pgh.huutinhdoor.service;
 
 import com.pgh.huutinhdoor.dto.request.ProductCreateRequest;
+import com.pgh.huutinhdoor.dto.request.ProductUpdateRequest;
+import com.pgh.huutinhdoor.dto.response.ProductResponseClient;
 import com.pgh.huutinhdoor.dto.response.ProductResponseInternal;
 import com.pgh.huutinhdoor.entity.Category;
 import com.pgh.huutinhdoor.entity.Product;
+import com.pgh.huutinhdoor.exception.ResourceNotFoundException;
 import com.pgh.huutinhdoor.mapper.ProductMapper;
 import com.pgh.huutinhdoor.repository.CategoryRepository;
 import com.pgh.huutinhdoor.repository.ProductRepository;
+import com.pgh.huutinhdoor.util.EntityUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,24 +24,42 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
 
-    public List<Product> getAllProducts() {
+    public List<Product> getAll() {
         return productRepository.findAllWithCategory();
     }
 
-    public Product getProductById(Long id) {
+    public List<Product> getByCategoryId(Long categoryId) {
+        return productRepository.findAllByCategory_Id(categoryId);
+    }
+
+    public Product findByIdOrThrow(Long id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
     }
 
     @Transactional
     public ProductResponseInternal create(ProductCreateRequest request) {
-
         Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
-
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
         Product product = productMapper.toEntity(request, category);
-
         Product saved = productRepository.save(product);
         return productMapper.toInternalResponse(saved);
+    }
+
+    @Transactional
+    public ProductResponseInternal update(Long id, ProductUpdateRequest request) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id) );
+        EntityUtil.copyNoNullProperties(request,product);
+        Product saved = productRepository.save(product);
+        return productMapper.toInternalResponse(saved);
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Product not found with id: " + id));
+        productRepository.delete(product);
     }
 }

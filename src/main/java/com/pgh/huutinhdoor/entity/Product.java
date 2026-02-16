@@ -23,11 +23,8 @@ public class Product {
 
     private Double price;
     private Double costPrice;
-
     private Integer stockQuantity;
-
     private String unit;
-
     private Boolean isAvailable = true;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -1,4 +1,4 @@
-package com.pgh.huutinhdoor.controller;
+package com.pgh.huutinhdoor.controller.client;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;

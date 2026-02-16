@@ -1,11 +1,11 @@
-package com.pgh.huutinhdoor.controller;
+package com.pgh.huutinhdoor.controller.client;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/suppliers")
+@RequestMapping("/api/projects")
 @RequiredArgsConstructor
-public class SupplierController {
+public class ProjectController {
 }

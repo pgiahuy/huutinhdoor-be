@@ -10,4 +10,7 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product,Long> {
     @Query("SELECT p FROM Product p LEFT JOIN FETCH p.category")
     List<Product> findAllWithCategory();
+
+    List<Product> findAllByCategory_Id(Long categoryId);
+
 }

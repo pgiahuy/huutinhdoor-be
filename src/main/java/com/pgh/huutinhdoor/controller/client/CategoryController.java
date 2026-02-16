@@ -1,4 +1,4 @@
-package com.pgh.huutinhdoor.controller;
+package com.pgh.huutinhdoor.controller.client;
 
 import com.pgh.huutinhdoor.dto.request.CategoryCreateRequest;
 import com.pgh.huutinhdoor.dto.response.CategoryResponse;
