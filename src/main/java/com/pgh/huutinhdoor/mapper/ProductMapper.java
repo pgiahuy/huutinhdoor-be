@@ -1,17 +1,33 @@
 package com.pgh.huutinhdoor.mapper;
 
-import com.pgh.huutinhdoor.dto.response.ProductResponeInternal;
+import com.pgh.huutinhdoor.dto.request.ProductCreateRequest;
+import com.pgh.huutinhdoor.dto.response.ProductResponseInternal;
+import com.pgh.huutinhdoor.entity.Category;
 import com.pgh.huutinhdoor.entity.Product;
-import com.pgh.huutinhdoor.dto.response.ProductResponeClient;
+import com.pgh.huutinhdoor.dto.response.ProductResponseClient;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ProductMapper {
 
-    public ProductResponeClient toClientRespone(Product p) {
+    public Product toEntity(ProductCreateRequest req, Category category) {
+
+        return Product.builder()
+                .name(req.getName())
+                .description(req.getDescription())
+                .price(req.getPrice())
+                .costPrice(req.getCostPrice())
+                .stockQuantity(req.getStockQuantity())
+                .isAvailable(true)
+                .unit(req.getUnit())
+                .category(category)
+                .build();
+    }
+
+    public ProductResponseClient toClientResponse(Product p) {
         if (p == null) return null;
 
-        return ProductResponeClient.builder()
+        return ProductResponseClient.builder()
                 .id(p.getId())
                 .name(p.getName())
                 .description(p.getDescription())
@@ -25,10 +41,10 @@ public class ProductMapper {
                 .build();
     }
 
-    public ProductResponeInternal toInternalRespone(Product p) {
+    public ProductResponseInternal toInternalResponse(Product p) {
         if (p == null) return null;
 
-        return ProductResponeInternal.builder()
+        return ProductResponseInternal.builder()
                 .id(p.getId())
                 .name(p.getName())
                 .description(p.getDescription())

@@ -9,11 +9,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductResponeClient {
+public class ProductResponseInternal {
     private Long id;
     private String name;
     private String description;
     private Double price;
+    private Double costPrice;
     private Integer stockQuantity;
     private String unit;
     private Boolean isAvailable;

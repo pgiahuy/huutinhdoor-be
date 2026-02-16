@@ -1,6 +1,6 @@
 package com.pgh.huutinhdoor.controller;
 
-import com.pgh.huutinhdoor.dto.response.ProductResponeInternal;
+import com.pgh.huutinhdoor.dto.response.ProductResponseInternal;
 import com.pgh.huutinhdoor.mapper.ProductMapper;
 import com.pgh.huutinhdoor.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +19,10 @@ public class ProductAdminController {
     private final ProductMapper productMapper;
 
     @GetMapping
-    public ResponseEntity<List<ProductResponeInternal>> getAllForAdmin() {
-        List<ProductResponeInternal> result = productService.getAllProducts()
+    public ResponseEntity<List<ProductResponseInternal>> getAllForAdmin() {
+        List<ProductResponseInternal> result = productService.getAllProducts()
                 .stream()
-                .map(productMapper::toInternalRespone)
+                .map(productMapper::toInternalResponse)
                 .toList();
         return ResponseEntity.ok(result);
     }
