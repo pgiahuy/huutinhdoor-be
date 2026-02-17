@@ -1,4 +1,4 @@
-package com.pgh.huutinhdoor.dto.response;
+package com.pgh.huutinhdoor.dto.response.admin;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductResponseInternal {
+public class ProductAdminResponse {
     private Long id;
     private String name;
     private String description;

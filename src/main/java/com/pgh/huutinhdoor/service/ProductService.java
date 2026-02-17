@@ -2,8 +2,7 @@ package com.pgh.huutinhdoor.service;
 
 import com.pgh.huutinhdoor.dto.request.ProductCreateRequest;
 import com.pgh.huutinhdoor.dto.request.ProductUpdateRequest;
-import com.pgh.huutinhdoor.dto.response.ProductResponseClient;
-import com.pgh.huutinhdoor.dto.response.ProductResponseInternal;
+import com.pgh.huutinhdoor.dto.response.admin.ProductAdminResponse;
 import com.pgh.huutinhdoor.entity.Category;
 import com.pgh.huutinhdoor.entity.Product;
 import com.pgh.huutinhdoor.exception.ResourceNotFoundException;
@@ -38,21 +37,21 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductResponseInternal create(ProductCreateRequest request) {
+    public ProductAdminResponse create(ProductCreateRequest request) {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
         Product product = productMapper.toEntity(request, category);
         Product saved = productRepository.save(product);
-        return productMapper.toInternalResponse(saved);
+        return productMapper.toAdminResponse(saved);
     }
 
     @Transactional
-    public ProductResponseInternal update(Long id, ProductUpdateRequest request) {
+    public ProductAdminResponse update(Long id, ProductUpdateRequest request) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id) );
         EntityUtil.copyNoNullProperties(request,product);
         Product saved = productRepository.save(product);
-        return productMapper.toInternalResponse(saved);
+        return productMapper.toAdminResponse(saved);
     }
 
     @Transactional

@@ -1,17 +1,13 @@
 package com.pgh.huutinhdoor.controller.client;
 
-import com.pgh.huutinhdoor.dto.request.ProductCreateRequest;
-import com.pgh.huutinhdoor.dto.response.ProductResponseClient;
-import com.pgh.huutinhdoor.dto.response.ProductResponseInternal;
+import com.pgh.huutinhdoor.dto.response.client.ProductClientResponse;
 import com.pgh.huutinhdoor.entity.Product;
 import com.pgh.huutinhdoor.mapper.ProductMapper;
 import com.pgh.huutinhdoor.service.ProductService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -23,8 +19,8 @@ public class ProductController {
     private final ProductMapper productMapper;
 
     @GetMapping
-    public ResponseEntity<List<ProductResponseClient>> getAllProducts() {
-        List<ProductResponseClient> result = productService.getAll()
+    public ResponseEntity<List<ProductClientResponse>> getAllProducts() {
+        List<ProductClientResponse> result = productService.getAll()
                 .stream()
                 .map(productMapper::toClientResponse)
                 .toList();
@@ -32,7 +28,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponseClient> getById(@PathVariable Long id) {
+    public ResponseEntity<ProductClientResponse> getById(@PathVariable Long id) {
         Product product = productService.findByIdOrThrow(id);
         return ResponseEntity.ok(productMapper.toClientResponse(product));
     }

@@ -2,8 +2,7 @@ package com.pgh.huutinhdoor.controller.admin;
 
 import com.pgh.huutinhdoor.dto.request.ProductCreateRequest;
 import com.pgh.huutinhdoor.dto.request.ProductUpdateRequest;
-import com.pgh.huutinhdoor.dto.response.ProductResponseClient;
-import com.pgh.huutinhdoor.dto.response.ProductResponseInternal;
+import com.pgh.huutinhdoor.dto.response.admin.ProductAdminResponse;
 import com.pgh.huutinhdoor.entity.Product;
 import com.pgh.huutinhdoor.mapper.ProductMapper;
 import com.pgh.huutinhdoor.service.ProductService;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/api/v1/admin/products")
@@ -25,41 +23,40 @@ public class AdminProductController {
     private final ProductMapper productMapper;
 
     @GetMapping
-    public ResponseEntity<List<ProductResponseInternal>> getAllProducts() {
-        List<ProductResponseInternal> result = productService.getAll()
+    public ResponseEntity<List<ProductAdminResponse>> getAllProducts() {
+        List<ProductAdminResponse> result = productService.getAll()
                 .stream()
-                .map(productMapper::toInternalResponse)
+                .map(productMapper::toAdminResponse)
                 .toList();
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponseInternal> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductAdminResponse> getProductById(@PathVariable Long id) {
         Product product = productService.findByIdOrThrow(id);
-        return ResponseEntity.ok(productMapper.toInternalResponse(product));
+        return ResponseEntity.ok(productMapper.toAdminResponse(product));
     }
 
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<List<ProductResponseInternal>> getByCategoryId(@PathVariable Long categoryId) {
-        List<ProductResponseInternal> result = productService.getByCategoryId(categoryId)
+    public ResponseEntity<List<ProductAdminResponse>> getByCategoryId(@PathVariable Long categoryId) {
+        List<ProductAdminResponse> result = productService.getByCategoryId(categoryId)
                 .stream()
-                .map(productMapper::toInternalResponse)
+                .map(productMapper::toAdminResponse)
                 .toList();
         return ResponseEntity.ok(result);
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponseInternal> createProduct(@Valid @RequestBody ProductCreateRequest p) {
+    public ResponseEntity<ProductAdminResponse> create(@Valid @RequestBody ProductCreateRequest request) {
 
-        ProductResponseInternal response = productService.create(p);
+        ProductAdminResponse response = productService.create(request);
         return ResponseEntity
                 .created(URI.create("/api/v1/admin/products" + response.getId()))
                 .body(response);
-
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponseInternal> update(
+    public ResponseEntity<ProductAdminResponse> update(
             @PathVariable Long id,
             @Valid @RequestBody ProductUpdateRequest request) {
         return ResponseEntity.ok(productService.update(id, request));

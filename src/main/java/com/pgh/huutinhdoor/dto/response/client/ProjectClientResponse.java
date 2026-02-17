@@ -1,17 +1,21 @@
-package com.pgh.huutinhdoor.dto.response;
+package com.pgh.huutinhdoor.dto.response.client;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 
 import java.time.LocalDate;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Data
-public class ProjectResponse {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class ProjectClientResponse {
+
 
     private Long id;
 
@@ -21,9 +25,6 @@ public class ProjectResponse {
 
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate completionDate;
-
-    private Long customerId;
-    private Long ticketId;
 
     private List<Long> categoryIds;
 }
