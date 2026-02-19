@@ -2,7 +2,7 @@ package com.pgh.huutinhdoor.service;
 
 import com.pgh.huutinhdoor.dto.request.ProjectCreateRequest;
 import com.pgh.huutinhdoor.dto.request.ProjectUpdateRequest;
-import com.pgh.huutinhdoor.dto.response.admin.ProjectAdminResponse;
+import com.pgh.huutinhdoor.dto.response.admin.ProjectResponse;
 import com.pgh.huutinhdoor.entity.*;
 import com.pgh.huutinhdoor.exception.ResourceNotFoundException;
 import com.pgh.huutinhdoor.mapper.ProjectMapper;
@@ -34,7 +34,7 @@ public class ProjectService {
     }
 
     @Transactional
-    public ProjectAdminResponse create(ProjectCreateRequest request) {
+    public ProjectResponse create(ProjectCreateRequest request) {
         Project project = new Project();
         project.setTitle(request.getTitle());
         project.setDescription(request.getDescription());
@@ -63,7 +63,7 @@ public class ProjectService {
     }
 
     @Transactional
-    public ProjectAdminResponse update(Long id, ProjectUpdateRequest request) {
+    public ProjectResponse update(Long id, ProjectUpdateRequest request) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + id) );
         EntityUtil.copyNoNullProperties(request,project);

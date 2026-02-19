@@ -1,10 +1,9 @@
 package com.pgh.huutinhdoor.mapper;
 
 import com.pgh.huutinhdoor.dto.request.ProductCreateRequest;
-import com.pgh.huutinhdoor.dto.response.admin.ProductAdminResponse;
 import com.pgh.huutinhdoor.entity.Category;
 import com.pgh.huutinhdoor.entity.Product;
-import com.pgh.huutinhdoor.dto.response.client.ProductClientResponse;
+import com.pgh.huutinhdoor.dto.response.client.ProductResponse;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -24,10 +23,10 @@ public class ProductMapper {
                 .build();
     }
 
-    public ProductClientResponse toClientResponse(Product p) {
+    public ProductResponse toClientResponse(Product p) {
         if (p == null) return null;
 
-        return ProductClientResponse.builder()
+        return ProductResponse.builder()
                 .id(p.getId())
                 .name(p.getName())
                 .description(p.getDescription())
@@ -41,10 +40,10 @@ public class ProductMapper {
                 .build();
     }
 
-    public ProductAdminResponse toAdminResponse(Product p) {
+    public com.pgh.huutinhdoor.dto.response.admin.ProductResponse toAdminResponse(Product p) {
         if (p == null) return null;
 
-        return ProductAdminResponse.builder()
+        return com.pgh.huutinhdoor.dto.response.admin.ProductResponse.builder()
                 .id(p.getId())
                 .name(p.getName())
                 .description(p.getDescription())

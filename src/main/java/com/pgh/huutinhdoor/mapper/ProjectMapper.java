@@ -1,15 +1,12 @@
 package com.pgh.huutinhdoor.mapper;
 
 import com.pgh.huutinhdoor.dto.request.ProjectCreateRequest;
-import com.pgh.huutinhdoor.dto.response.admin.ProjectAdminResponse;
-import com.pgh.huutinhdoor.dto.response.client.ProductClientResponse;
-import com.pgh.huutinhdoor.dto.response.client.ProjectClientResponse;
+import com.pgh.huutinhdoor.dto.response.client.ProjectResponse;
 import com.pgh.huutinhdoor.entity.Category;
 import com.pgh.huutinhdoor.entity.Customer;
 import com.pgh.huutinhdoor.entity.Project;
 import com.pgh.huutinhdoor.entity.Ticket;
 
-import java.util.List;
 import java.util.Set;
 
 public class ProjectMapper {
@@ -26,11 +23,11 @@ public class ProjectMapper {
                 .build();
     }
 
-    public ProjectClientResponse toClientResponse(Project project) {
+    public ProjectResponse toClientResponse(Project project) {
         if (project == null) {
             return null;
         }
-        return ProjectClientResponse.builder()
+        return ProjectResponse.builder()
                 .id(project.getId())
                 .title(project.getTitle())
                 .description(project.getDescription())
@@ -41,11 +38,11 @@ public class ProjectMapper {
                 .build();
     }
 
-    public ProjectAdminResponse toAdminResponse(Project project) {
+    public com.pgh.huutinhdoor.dto.response.admin.ProjectResponse toAdminResponse(Project project) {
         if (project == null) {
             return null;
         }
-        return ProjectAdminResponse.builder()
+        return com.pgh.huutinhdoor.dto.response.admin.ProjectResponse.builder()
                 .id(project.getId())
                 .title(project.getTitle())
                 .description(project.getDescription())

@@ -1,9 +1,8 @@
 package com.pgh.huutinhdoor.controller.admin;
 
-import com.pgh.huutinhdoor.dto.request.ProductUpdateRequest;
 import com.pgh.huutinhdoor.dto.request.ProjectCreateRequest;
 import com.pgh.huutinhdoor.dto.request.ProjectUpdateRequest;
-import com.pgh.huutinhdoor.dto.response.admin.ProjectAdminResponse;
+import com.pgh.huutinhdoor.dto.response.admin.ProjectResponse;
 import com.pgh.huutinhdoor.entity.Project;
 import com.pgh.huutinhdoor.mapper.ProjectMapper;
 import com.pgh.huutinhdoor.service.ProjectService;
@@ -24,36 +23,36 @@ public class AdminProjectController {
     private final ProjectMapper projectMapper;
 
     @GetMapping
-    public ResponseEntity<List<ProjectAdminResponse>> getAll(){
-        List<ProjectAdminResponse> result = projectService.getAll().stream()
+    public ResponseEntity<List<ProjectResponse>> getAll(){
+        List<ProjectResponse> result = projectService.getAll().stream()
                 .map(projectMapper::toAdminResponse)
                 .toList();
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProjectAdminResponse> getById(@PathVariable Long id){
+    public ResponseEntity<ProjectResponse> getById(@PathVariable Long id){
         Project project = projectService.findByIdOrThrow(id);
         return ResponseEntity.ok(projectMapper.toAdminResponse(project));
     }
 
     @PostMapping
-    public ResponseEntity<ProjectAdminResponse> create(@Valid @RequestBody ProjectCreateRequest request){
-        ProjectAdminResponse response = projectService.create(request);
+    public ResponseEntity<ProjectResponse> create(@Valid @RequestBody ProjectCreateRequest request){
+        ProjectResponse response = projectService.create(request);
         return  ResponseEntity
                 .created(URI.create("/api/v1/admin/projects"+response.getId()))
                 .body(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProjectAdminResponse> update(
+    public ResponseEntity<ProjectResponse> update(
             @PathVariable Long id,
             @Valid @RequestBody ProjectUpdateRequest request){
         return ResponseEntity.ok(projectService.update(id,request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ProjectAdminResponse> delete(
+    public ResponseEntity<ProjectResponse> delete(
             @PathVariable Long id,
             @Valid @RequestBody ProjectCreateRequest request){
         projectService.delete(id);

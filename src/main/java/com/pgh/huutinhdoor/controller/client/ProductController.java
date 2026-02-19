@@ -1,6 +1,6 @@
 package com.pgh.huutinhdoor.controller.client;
 
-import com.pgh.huutinhdoor.dto.response.client.ProductClientResponse;
+import com.pgh.huutinhdoor.dto.response.client.ProductResponse;
 import com.pgh.huutinhdoor.entity.Product;
 import com.pgh.huutinhdoor.mapper.ProductMapper;
 import com.pgh.huutinhdoor.service.ProductService;
@@ -19,8 +19,8 @@ public class ProductController {
     private final ProductMapper productMapper;
 
     @GetMapping
-    public ResponseEntity<List<ProductClientResponse>> getAllProducts() {
-        List<ProductClientResponse> result = productService.getAll()
+    public ResponseEntity<List<ProductResponse>> getAllProducts() {
+        List<ProductResponse> result = productService.getAll()
                 .stream()
                 .map(productMapper::toClientResponse)
                 .toList();
@@ -28,7 +28,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductClientResponse> getById(@PathVariable Long id) {
+    public ResponseEntity<ProductResponse> getById(@PathVariable Long id) {
         Product product = productService.findByIdOrThrow(id);
         return ResponseEntity.ok(productMapper.toClientResponse(product));
     }

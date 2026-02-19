@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectClientResponse {
+public class ProjectResponse {
 
 
     private Long id;
