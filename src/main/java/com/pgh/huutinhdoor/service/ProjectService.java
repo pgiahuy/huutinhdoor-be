@@ -19,7 +19,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProjectService {
     private final ProjectRepository projectRepository;
-    private final CustomerRepository customerRepository;
     private final TicketRepository ticketRepository;
     private final CategoryRepository categoryRepository;
     private final ProjectMapper projectMapper;
@@ -40,11 +39,6 @@ public class ProjectService {
         project.setDescription(request.getDescription());
         project.setLocation(request.getLocation());
 
-        if (request.getCustomerId() != null) {
-            Customer customer = customerRepository.findById(request.getCustomerId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
-            project.setCustomer(customer);
-        }
         if (request.getTicketId() != null) {
             Ticket ticket = ticketRepository.findById(request.getTicketId())
                     .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));

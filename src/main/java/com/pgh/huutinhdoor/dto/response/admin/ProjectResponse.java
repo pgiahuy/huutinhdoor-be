@@ -23,8 +23,6 @@ public class ProjectResponse {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate completionDate;
 
-    private Long customerId;
-
     private Long ticketId;
 
     private List<Long> categoryIds;

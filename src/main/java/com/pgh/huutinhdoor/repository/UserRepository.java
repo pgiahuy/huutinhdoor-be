@@ -1,6 +1,6 @@
 package com.pgh.huutinhdoor.repository;
 
-import org.apache.catalina.User;
+import com.pgh.huutinhdoor.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long> {

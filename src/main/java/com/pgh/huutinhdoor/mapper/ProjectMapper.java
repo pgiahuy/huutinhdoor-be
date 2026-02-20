@@ -6,18 +6,19 @@ import com.pgh.huutinhdoor.entity.Category;
 import com.pgh.huutinhdoor.entity.Customer;
 import com.pgh.huutinhdoor.entity.Project;
 import com.pgh.huutinhdoor.entity.Ticket;
+import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
+@Component
 public class ProjectMapper {
 
-    public Project toEntity(ProjectCreateRequest req, Customer customer,
+    public Project toEntity(ProjectCreateRequest req,
                             Ticket ticket, Set<Category> categories) {
         return Project.builder()
                 .title(req.getTitle())
                 .description(req.getDescription())
                 .location(req.getLocation())
-                .customer(customer)
                 .ticket(ticket)
                 .categories(categories)
                 .build();
@@ -48,7 +49,6 @@ public class ProjectMapper {
                 .description(project.getDescription())
                 .location(project.getLocation())
                 .completionDate(project.getCompletionDate())
-                .customerId(project.getCustomer() != null ? project.getCustomer().getId() : null)
                 .ticketId(project.getTicket() != null ? project.getTicket().getId() : null)
                 .categoryIds(project.getCategories() != null ?
                         project.getCategories().stream().map(Category::getId).toList() : null)

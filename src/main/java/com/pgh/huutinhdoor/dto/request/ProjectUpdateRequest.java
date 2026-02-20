@@ -11,7 +11,6 @@ public class ProjectUpdateRequest {
 
     private String description;
     private String location;
-    private Long customerId;
     private Long ticketId;
     private List<Long> categoryIds;
 }

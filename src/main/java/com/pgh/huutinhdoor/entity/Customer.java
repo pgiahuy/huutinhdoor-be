@@ -13,10 +13,9 @@ public class Customer {
 
     private String name;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String phone;
 
-    private String email;
     private String address;
 
     @Column(columnDefinition = "TEXT")
@@ -26,4 +25,8 @@ public class Customer {
 
     @OneToMany(mappedBy = "customer")
     private List<Ticket> tickets;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = true)
+    private User user;
 }

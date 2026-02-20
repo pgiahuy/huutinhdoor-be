@@ -21,8 +21,6 @@ public class ProjectCreateRequest {
     @NotBlank
     private String location;
 
-    @NotNull
-    private Long customerId;
 
     @NotNull
     private Long ticketId;

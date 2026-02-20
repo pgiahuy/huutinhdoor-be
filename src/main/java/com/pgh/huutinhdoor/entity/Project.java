@@ -28,9 +28,6 @@ public class Project {
     private String location;
     private LocalDate completionDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ticket_id")
