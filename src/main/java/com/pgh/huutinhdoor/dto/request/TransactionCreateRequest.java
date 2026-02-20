@@ -21,8 +21,13 @@ public class TransactionCreateRequest {
 
     @NotNull
     private BigDecimal amount;
+
+    @NotNull
     private TransactionType transactionType;
+
+    @NotNull
     private PaymentType paymentMethod;
+
     private Long referenceId;
     private String referenceType;
 
@@ -31,6 +36,5 @@ public class TransactionCreateRequest {
     private Long supplierId;
     private LocalDateTime transactionDate;
     private String createdBy;
-    private LocalDateTime createdDate;
 
 }

@@ -30,6 +30,5 @@ public class TransactionResponse {
     private Long supplierId;
     private LocalDateTime transactionDate;
     private String createdBy;
-    private LocalDateTime createdDate;
 
 }
