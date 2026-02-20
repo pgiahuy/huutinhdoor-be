@@ -53,8 +53,7 @@ public class AdminProjectController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ProjectResponse> delete(
-            @PathVariable Long id,
-            @Valid @RequestBody ProjectCreateRequest request){
+            @PathVariable Long id){
         projectService.delete(id);
         return ResponseEntity.noContent().build();
     }
