@@ -1,11 +1,13 @@
 package com.pgh.huutinhdoor.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import java.util.List;
 
 @Entity
 @Data
+@Builder
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,13 +17,10 @@ public class Customer {
 
     @Column(unique = true, nullable = false)
     private String phone;
-
     private String address;
 
     @Column(columnDefinition = "TEXT")
     private String note;
-
-    private String type;
 
     @OneToMany(mappedBy = "customer")
     private List<Ticket> tickets;
