@@ -4,7 +4,7 @@ public enum UploadFolder {
     PRODUCT("products"),
     PROJECT("projects"),
     USER("users"),
-    EXPENSE("expenses");
+    SUPPLIER("suppliers"),;
 
     private final String path;
 

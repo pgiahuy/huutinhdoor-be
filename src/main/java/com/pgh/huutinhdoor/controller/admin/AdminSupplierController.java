@@ -1,24 +1,24 @@
-package com.pgh.huutinhdoor.controller.client;
+package com.pgh.huutinhdoor.controller.admin;
 
-import com.pgh.huutinhdoor.dto.response.client.SupplierResponse;
+import com.pgh.huutinhdoor.dto.request.SupplierCreateRequest;
+import com.pgh.huutinhdoor.dto.response.admin.SupplierResponse;
 import com.pgh.huutinhdoor.entity.Image;
 import com.pgh.huutinhdoor.entity.Supplier;
 import com.pgh.huutinhdoor.mapper.SupplierMapper;
+import com.pgh.huutinhdoor.repository.ImageRepository;
 import com.pgh.huutinhdoor.service.SupplierService;
 import com.pgh.huutinhdoor.util.GlobalConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/suppliers")
+@RequestMapping("/api/v1/admin/suppliers")
 @RequiredArgsConstructor
-public class SupplierController {
+public class AdminSupplierController {
     private final SupplierService supplierService;
     private final SupplierMapper supplierMapper;
 
@@ -31,7 +31,7 @@ public class SupplierController {
                 ? avatar.getUrl()
                 : GlobalConstants.SUPPLIER_AVATAR;
 
-        SupplierResponse response = supplierMapper.toClientResponse(supplier, avatarUrl);
+        SupplierResponse response = supplierMapper.toAdminResponse(supplier, avatarUrl);
         return ResponseEntity.ok(response);
     }
 
@@ -45,9 +45,24 @@ public class SupplierController {
                     String avatarUrl = (avatar != null && avatar.getUrl() != null)
                             ? avatar.getUrl()
                             : GlobalConstants.SUPPLIER_AVATAR;
-                    return supplierMapper.toClientResponse(supplier, avatarUrl);
+                    return supplierMapper.toAdminResponse(supplier, avatarUrl);
                 })
                 .toList();
         return ResponseEntity.ok(result);
+    }
+
+    @PostMapping
+    public ResponseEntity<SupplierResponse> createSupplier(@RequestBody SupplierCreateRequest request) {
+        Supplier supplier = supplierService.create(request);
+        Image avatar = supplierService.getPrimaryAvatar(supplier.getId()).orElse(null);
+
+        String avatarUrl = (avatar != null && avatar.getUrl() != null)
+                ? avatar.getUrl()
+                : GlobalConstants.SUPPLIER_AVATAR;
+        SupplierResponse response = supplierMapper.toAdminResponse(supplier, avatarUrl);
+
+        return ResponseEntity
+                .created(URI.create("/api/v1/admin/suppliers"+response.getId()) )
+                .body(response);
     }
 }

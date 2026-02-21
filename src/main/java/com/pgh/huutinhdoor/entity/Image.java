@@ -2,10 +2,12 @@ package com.pgh.huutinhdoor.entity;
 
 import com.pgh.huutinhdoor.enums.TargetType;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 @Entity
 @Data
+@Builder
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

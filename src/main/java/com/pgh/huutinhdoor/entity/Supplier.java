@@ -1,11 +1,14 @@
 package com.pgh.huutinhdoor.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import lombok.Builder;
 import lombok.Data;
 import java.util.List;
 
 @Entity
 @Data
+@Builder
 public class Supplier {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,7 +20,11 @@ public class Supplier {
     private String phone;
 
     private String address;
+
+    @Email
     private String email;
+
+    private String avatar;
 
     @Column(columnDefinition = "TEXT")
     private String note;

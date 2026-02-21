@@ -18,6 +18,26 @@ public class CloudinaryService {
     private final Cloudinary cloudinary;
     private final CloudinaryConfig cloudinaryConfig;
 
+    public CloudinaryResponse uploadFile(MultipartFile file, UploadFolder folder) {
+        if (file.isEmpty()) {
+            return new CloudinaryResponse("", "", "File trống");
+        }
+        if (file.getSize() > cloudinaryConfig.getMaxSize()) {
+            return new CloudinaryResponse("", "", "File quá lớn (max 10MB): " + file.getOriginalFilename());
+        }
+
+        try {
+            Map data = upload(file, folder);
+            return new CloudinaryResponse(
+                    Objects.toString(data.get("secure_url"), ""),
+                    Objects.toString(data.get("public_id"), ""),
+                    "Upload thành công"
+            );
+        } catch (RuntimeException e) {
+            return new CloudinaryResponse("", "", "Upload thất bại: " + file.getOriginalFilename());
+        }
+    }
+
     public List<?> uploadFiles(MultipartFile[] files, UploadFolder folder) {
 
         if (Arrays.stream(files).allMatch(MultipartFile::isEmpty)) {

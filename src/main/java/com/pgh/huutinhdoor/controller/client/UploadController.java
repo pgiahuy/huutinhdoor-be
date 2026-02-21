@@ -18,6 +18,23 @@ public class UploadController {
 
     private final CloudinaryService cloudinaryService;
 
+    @PostMapping("/avatar")
+    public ResponseEntity<CloudinaryResponse> uploadAvatar(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam String folder) {
+
+        UploadFolder uploadFolder;
+        try {
+            uploadFolder = UploadFolder.valueOf(folder.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(new CloudinaryResponse("", "", "Folder không hợp lệ"));
+        }
+
+        CloudinaryResponse result = cloudinaryService.uploadFile(file, uploadFolder);
+        return ResponseEntity.ok(result);
+    }
+
     @PostMapping
     public ResponseEntity<?> upload(
             @RequestParam("file") MultipartFile[] files,
