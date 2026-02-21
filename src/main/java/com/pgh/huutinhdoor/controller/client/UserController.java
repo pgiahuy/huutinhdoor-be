@@ -1,31 +1,22 @@
-package com.pgh.huutinhdoor.controller.admin;
+package com.pgh.huutinhdoor.controller.client;
 
 import com.pgh.huutinhdoor.dto.request.UserCreateRequest;
 import com.pgh.huutinhdoor.dto.request.UserUpdateRequest;
 import com.pgh.huutinhdoor.dto.response.UserResponse;
-import com.pgh.huutinhdoor.entity.User;
-import com.pgh.huutinhdoor.mapper.UserMapper;
-import com.pgh.huutinhdoor.repository.UserRepository;
 import com.pgh.huutinhdoor.service.UserService;
+import jakarta.persistence.PostRemove;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/admin/users")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
-public class AdminUserController {
-    private  final UserService userService;
+public class UserController {
 
-    @GetMapping
-    public ResponseEntity<List<UserResponse>> getAllUsers() {
-        List<UserResponse> result =  userService.getAll();
-        return ResponseEntity.ok(result);
-    }
+    private final UserService userService;
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getById(@PathVariable Long id) {
@@ -44,12 +35,8 @@ public class AdminUserController {
         UserResponse result =  userService.update(request, id);
         return ResponseEntity.ok(result);
     }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<UserResponse> deleteUser(@PathVariable Long id){
-        userService.delete(id);
-        return ResponseEntity.noContent().build();
+        return null;
     }
-
-
 }

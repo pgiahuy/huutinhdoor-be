@@ -31,6 +31,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole role =  UserRole.USER;
 
+    @Column(nullable = false)
+    private Boolean isActive = true ;
+
     @OneToOne(mappedBy = "user")
     private Customer customer;
 }

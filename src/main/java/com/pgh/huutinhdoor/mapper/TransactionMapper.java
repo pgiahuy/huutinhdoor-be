@@ -7,9 +7,11 @@ import com.pgh.huutinhdoor.entity.Category;
 import com.pgh.huutinhdoor.entity.Customer;
 import com.pgh.huutinhdoor.entity.Supplier;
 import com.pgh.huutinhdoor.entity.Transaction;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
+@Component
 public class TransactionMapper {
     public TransactionResponse toResponse(Transaction transaction){
         return TransactionResponse.builder()

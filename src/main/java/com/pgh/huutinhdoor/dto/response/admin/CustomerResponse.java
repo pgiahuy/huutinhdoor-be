@@ -20,5 +20,5 @@ public class CustomerResponse {
     private String phone;
     private String address;
     private String note;
-    private Long UserId;
+    private Long userId;
 }
