@@ -18,4 +18,5 @@ public class UserUpdateRequest {
     private String email;
     private UserRole role;
     private Boolean isActive;
+    private Long customerId;
 }

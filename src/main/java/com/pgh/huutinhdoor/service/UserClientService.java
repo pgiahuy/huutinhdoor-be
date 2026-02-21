@@ -3,21 +3,27 @@ package com.pgh.huutinhdoor.service;
 import com.pgh.huutinhdoor.dto.request.UserCreateRequest;
 import com.pgh.huutinhdoor.dto.request.UserUpdateRequest;
 import com.pgh.huutinhdoor.dto.response.UserResponse;
+import com.pgh.huutinhdoor.entity.Customer;
 import com.pgh.huutinhdoor.entity.User;
 import com.pgh.huutinhdoor.enums.UserRole;
 import com.pgh.huutinhdoor.exception.DuplicateResourceException;
 import com.pgh.huutinhdoor.exception.ResourceNotFoundException;
 import com.pgh.huutinhdoor.mapper.UserMapper;
+import com.pgh.huutinhdoor.repository.CustomerRepository;
 import com.pgh.huutinhdoor.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+import java.util.OptionalInt;
+
 @Service
 @RequiredArgsConstructor
 public class UserClientService {
     private final UserRepository userRepository;
+    private final CustomerRepository customerRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -34,13 +40,21 @@ public class UserClientService {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new DuplicateResourceException("Email already exists");
         }
+        Customer customer = customerRepository.findByPhone(request.getPhone())
+                .orElseGet(() -> {
+                    Customer newCustomer = Customer.builder()
+                            .phone(request.getPhone())
+                            .build();
+                    return customerRepository.save(newCustomer);
+                });
+
         User user = new User();
         user.setPhone(request.getPhone());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEmail(request.getEmail());
         user.setRole(UserRole.USER);
         user.setIsActive(true);
-
+        user.setCustomer(customer);
         User savedUser = userRepository.save(user);
         return userMapper.toResponse(savedUser);
     }

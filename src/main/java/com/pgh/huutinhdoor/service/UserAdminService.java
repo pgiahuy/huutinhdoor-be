@@ -3,10 +3,12 @@ package com.pgh.huutinhdoor.service;
 import com.pgh.huutinhdoor.dto.request.UserCreateRequest;
 import com.pgh.huutinhdoor.dto.request.UserUpdateRequest;
 import com.pgh.huutinhdoor.dto.response.UserResponse;
+import com.pgh.huutinhdoor.entity.Customer;
 import com.pgh.huutinhdoor.entity.User;
 import com.pgh.huutinhdoor.exception.DuplicateResourceException;
 import com.pgh.huutinhdoor.exception.ResourceNotFoundException;
 import com.pgh.huutinhdoor.mapper.UserMapper;
+import com.pgh.huutinhdoor.repository.CustomerRepository;
 import com.pgh.huutinhdoor.repository.UserRepository;
 import com.pgh.huutinhdoor.util.EntityUtil;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserAdminService {
     private final UserRepository userRepository;
+    private final CustomerRepository customerRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -54,10 +57,15 @@ public class UserAdminService {
 
     @Transactional
     public UserResponse update(UserUpdateRequest request, Long id) {
+
         User user = userRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("User not found with id " + id));
+
         validateDuplicate(request, user);
+
         EntityUtil.copyNoNullProperties(request, user);
+
+
         User saved = userRepository.save(user);
         return userMapper.toResponse(saved);
     }
