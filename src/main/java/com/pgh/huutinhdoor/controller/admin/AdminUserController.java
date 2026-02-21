@@ -3,13 +3,9 @@ package com.pgh.huutinhdoor.controller.admin;
 import com.pgh.huutinhdoor.dto.request.UserCreateRequest;
 import com.pgh.huutinhdoor.dto.request.UserUpdateRequest;
 import com.pgh.huutinhdoor.dto.response.UserResponse;
-import com.pgh.huutinhdoor.entity.User;
-import com.pgh.huutinhdoor.mapper.UserMapper;
-import com.pgh.huutinhdoor.repository.UserRepository;
-import com.pgh.huutinhdoor.service.UserService;
+import com.pgh.huutinhdoor.service.UserAdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -19,7 +15,7 @@ import java.util.List;
 @RequestMapping("/api/v1/admin/users")
 @RequiredArgsConstructor
 public class AdminUserController {
-    private  final UserService userService;
+    private  final UserAdminService userService;
 
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAllUsers() {

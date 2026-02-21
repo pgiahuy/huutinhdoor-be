@@ -9,7 +9,6 @@ import com.pgh.huutinhdoor.exception.DuplicateResourceException;
 import com.pgh.huutinhdoor.exception.ResourceNotFoundException;
 import com.pgh.huutinhdoor.mapper.UserMapper;
 import com.pgh.huutinhdoor.repository.UserRepository;
-import com.pgh.huutinhdoor.util.EntityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -74,17 +73,6 @@ public class UserClientService {
 
     private void validateDuplicate(UserUpdateRequest request, User user) {
 
-        if (request.getEmail() != null &&
-                !request.getEmail().equals(user.getEmail()) &&
-                userRepository.existsByEmail(request.getEmail())) {
-
-            throw new DuplicateResourceException("Email already exists");
-        }
-        if (request.getPhone() != null &&
-                !request.getPhone().equals(user.getPhone()) &&
-                userRepository.existsByPhone(request.getPhone())) {
-
-            throw new DuplicateResourceException("Phone already exists");
-        }
+        UserAdminService.checkDuplicatePhoneAndEmail(request, user, userRepository);
     }
 }

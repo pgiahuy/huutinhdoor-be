@@ -3,8 +3,7 @@ package com.pgh.huutinhdoor.controller.client;
 import com.pgh.huutinhdoor.dto.request.UserCreateRequest;
 import com.pgh.huutinhdoor.dto.request.UserUpdateRequest;
 import com.pgh.huutinhdoor.dto.response.UserResponse;
-import com.pgh.huutinhdoor.service.UserService;
-import jakarta.persistence.PostRemove;
+import com.pgh.huutinhdoor.service.UserAdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +15,7 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
+    private final UserAdminService userService;
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getById(@PathVariable Long id) {
