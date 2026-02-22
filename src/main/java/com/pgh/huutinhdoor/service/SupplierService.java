@@ -1,6 +1,7 @@
 package com.pgh.huutinhdoor.service;
 
 import com.pgh.huutinhdoor.dto.request.SupplierCreateRequest;
+import com.pgh.huutinhdoor.dto.request.SupplierUpdateRequest;
 import com.pgh.huutinhdoor.dto.response.CloudinaryResponse;
 import com.pgh.huutinhdoor.dto.response.admin.SupplierResponse;
 import com.pgh.huutinhdoor.entity.Image;
@@ -12,6 +13,7 @@ import com.pgh.huutinhdoor.exception.ResourceNotFoundException;
 import com.pgh.huutinhdoor.mapper.SupplierMapper;
 import com.pgh.huutinhdoor.repository.ImageRepository;
 import com.pgh.huutinhdoor.repository.SupplierRepository;
+import com.pgh.huutinhdoor.util.EntityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +26,7 @@ import java.util.Optional;
 public class SupplierService {
     private final SupplierRepository supplierRepository;
     private final SupplierMapper supplierMapper;
-    private final ImageRepository imageRepository;
+    private final ImageService  imageService;
     private final CloudinaryService cloudinaryService;
 
     @Transactional(readOnly = true)
@@ -33,16 +35,11 @@ public class SupplierService {
                 -> new ResourceNotFoundException("Supplier not found with id:" + id));
     }
 
-    @Transactional(readOnly = true)
-    public Optional<Image> getPrimaryAvatar(Long supplierId) {
-        return imageRepository.findByTargetIdAndTargetTypeAndIsPrimaryTrue(supplierId, TargetType.SUPPLIER);
-    }
 
     @Transactional(readOnly = true)
     public List<Supplier> getAll(){
         return  supplierRepository.findAll();
     }
-
 
     @Transactional
     public Supplier create(SupplierCreateRequest request) {
@@ -50,21 +47,39 @@ public class SupplierService {
         Supplier savedSupplier = supplierRepository.save(supplier);
 
         if (request.getAvatar() != null && !request.getAvatar().isEmpty()) {
-            CloudinaryResponse response = cloudinaryService.uploadFile(
+            imageService.replacePrimaryImage(
+                    savedSupplier.getId(),
+                    TargetType.SUPPLIER,
                     request.getAvatar(),
                     UploadFolder.SUPPLIER
             );
-            Image image = Image.builder()
-                    .url(response.getSecure_url())
-                    .publicId(response.getPublic_id())
-                    .isPrimary(true)
-                    .targetId(savedSupplier.getId())
-                    .targetType(TargetType.SUPPLIER)
-                    .build();
+        }
+        return savedSupplier;
+    }
 
-            imageRepository.save(image);
+    @Transactional
+    public Supplier update(Long id, SupplierUpdateRequest request) {
+        Supplier supplier = supplierRepository.findById(id).orElseThrow(()
+                -> new ResourceNotFoundException("Supplier not found with id:" + id));
+        EntityUtil.copyNoNullProperties(request, supplier);
+        Supplier savedSupplier = supplierRepository.save(supplier);
+
+        if (request.getAvatar() != null && !request.getAvatar().isEmpty()) {
+            imageService.replacePrimaryImage(
+                    savedSupplier.getId(),
+                    TargetType.SUPPLIER,
+                    request.getAvatar(),
+                    UploadFolder.SUPPLIER
+            );
         }
 
         return savedSupplier;
+    }
+    @Transactional
+    public void delete(Long id) {
+        Supplier supplier = supplierRepository.findById(id).orElseThrow(()
+                -> new ResourceNotFoundException("Supplier not found with id:" + id));
+        imageService.deleteAllByTarget(id, TargetType.SUPPLIER);
+        supplierRepository.delete(supplier);
     }
 }

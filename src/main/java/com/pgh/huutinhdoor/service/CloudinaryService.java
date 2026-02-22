@@ -67,6 +67,14 @@ public class CloudinaryService {
                 .toList();
     }
 
+    public void deleteFile(String publicId) {
+        try {
+            cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+        } catch (IOException e) {
+            throw new RuntimeException("Xóa ảnh thất bại");
+        }
+    }
+
 
     public Map upload(MultipartFile file, UploadFolder folder) {
         try {
