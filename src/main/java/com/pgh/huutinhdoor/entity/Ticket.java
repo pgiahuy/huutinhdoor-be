@@ -1,17 +1,25 @@
 package com.pgh.huutinhdoor.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pgh.huutinhdoor.enums.TicketStatus;
 import com.pgh.huutinhdoor.enums.PaymentStatus;
 import com.pgh.huutinhdoor.enums.TicketType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,8 +37,9 @@ public class Ticket {
     private String address;
 
     private LocalDateTime deadline;
-    private Double totalAmount;
-    private Double deposit;
+
+    private BigDecimal totalAmount;
+    private BigDecimal  deposit;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus = PaymentStatus.UNPAID;
@@ -43,7 +52,18 @@ public class Ticket {
     @Enumerated(EnumType.STRING)
     private TicketType type = TicketType.PRODUCT;
 
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<TicketItem> items = new ArrayList<>();
+
+    public void addItem(TicketItem item) {
+        items.add(item);
+        item.setTicket(this);
+    }
+
+    public void removeItem(TicketItem item) {
+        items.remove(item);
+        item.setTicket(null);
+    }
 
 }

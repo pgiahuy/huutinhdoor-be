@@ -4,6 +4,7 @@ import com.pgh.huutinhdoor.dto.response.CloudinaryResponse;
 import com.pgh.huutinhdoor.entity.Image;
 import com.pgh.huutinhdoor.enums.TargetType;
 import com.pgh.huutinhdoor.enums.UploadFolder;
+import com.pgh.huutinhdoor.exception.ResourceNotFoundException;
 import com.pgh.huutinhdoor.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,11 @@ public class ImageService {
 
         imageRepository.save(image);
     }
+
+//    public Image getAvatar(Long targetId,  TargetType targetType) {
+//        return imageRepository.findByTargetIdAndTargetTypeAndIsPrimaryTrue(targetId,targetType).orElseThrow(()
+//                -> new ResourceNotFoundException("Image not found with id " + targetId + " and target type " + targetType));
+//    }
 
     public void deleteAllByTarget(Long targetId, TargetType type) {
         List<Image> images = imageRepository.findAllByTargetIdAndTargetType(targetId, type);

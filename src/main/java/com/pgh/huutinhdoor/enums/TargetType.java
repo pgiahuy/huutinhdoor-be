@@ -1,9 +1,10 @@
 package com.pgh.huutinhdoor.enums;
 
-public enum TargetType {
+public enum TargetType { //for image
     PRODUCT,
     PROJECT,
     SUPPLIER,
     TICKET,
-    IMAGE
+    USER,
+    TRANSACTION,
 }

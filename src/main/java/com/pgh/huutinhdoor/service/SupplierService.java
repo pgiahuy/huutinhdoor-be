@@ -26,8 +26,8 @@ import java.util.Optional;
 public class SupplierService {
     private final SupplierRepository supplierRepository;
     private final SupplierMapper supplierMapper;
+    private final ImageRepository imageRepository;
     private final ImageService  imageService;
-    private final CloudinaryService cloudinaryService;
 
     @Transactional(readOnly = true)
     public Supplier findByIdOrThrow(Long id) {
@@ -82,4 +82,13 @@ public class SupplierService {
         imageService.deleteAllByTarget(id, TargetType.SUPPLIER);
         supplierRepository.delete(supplier);
     }
+
+    @Transactional(readOnly = true)
+    public Optional<Image> getPrimaryAvatar(Long supplierId) {
+        return imageRepository.findByTargetIdAndTargetTypeAndIsPrimaryTrue(supplierId, TargetType.SUPPLIER);
+    }
+
+//    public Image getPrimaryAvatar(Long id) {
+//        return imageService.getAvatar(id, TargetType.SUPPLIER);
+//    }
 }
