@@ -5,6 +5,8 @@ import com.pgh.huutinhdoor.dto.request.UserUpdateRequest;
 import com.pgh.huutinhdoor.dto.response.UserResponse;
 import com.pgh.huutinhdoor.entity.Customer;
 import com.pgh.huutinhdoor.entity.User;
+import com.pgh.huutinhdoor.enums.TargetType;
+import com.pgh.huutinhdoor.enums.UploadFolder;
 import com.pgh.huutinhdoor.exception.DuplicateResourceException;
 import com.pgh.huutinhdoor.exception.ResourceNotFoundException;
 import com.pgh.huutinhdoor.mapper.UserMapper;
@@ -22,9 +24,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserAdminService {
     private final UserRepository userRepository;
-    private final CustomerRepository customerRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+
+    private final ImageService imageService;
 
     @Transactional(readOnly = true)
     public List<UserResponse> getAll() {
@@ -52,6 +55,15 @@ public class UserAdminService {
                 passwordEncoder.encode(request.getPassword())
         );
         User savedUser = userRepository.save(user);
+
+        if (request.getAvatar() != null && !request.getAvatar().isEmpty()) {
+            imageService.replacePrimaryImage(
+                    savedUser.getId(),
+                    TargetType.USER,
+                    request.getAvatar(),
+                    UploadFolder.USER
+            );
+        }
         return userMapper.toResponse(savedUser);
     }
 
@@ -64,9 +76,16 @@ public class UserAdminService {
         validateDuplicate(request, user);
 
         EntityUtil.copyNoNullProperties(request, user);
-
-
         User saved = userRepository.save(user);
+
+        if (request.getAvatar() != null && !request.getAvatar().isEmpty()) {
+            imageService.replacePrimaryImage(
+                    saved.getId(),
+                    TargetType.USER,
+                    request.getAvatar(),
+                    UploadFolder.USER
+            );
+        }
         return userMapper.toResponse(saved);
     }
     @Transactional

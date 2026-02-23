@@ -9,6 +9,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Builder
@@ -20,6 +21,8 @@ public class UserCreateRequest {
     private String password;
     @NotBlank
     private String email;
+
+    private MultipartFile avatar;
 
     private UserRole role;
 

@@ -5,6 +5,8 @@ import com.pgh.huutinhdoor.dto.request.UserUpdateRequest;
 import com.pgh.huutinhdoor.dto.response.UserResponse;
 import com.pgh.huutinhdoor.entity.Customer;
 import com.pgh.huutinhdoor.entity.User;
+import com.pgh.huutinhdoor.enums.TargetType;
+import com.pgh.huutinhdoor.enums.UploadFolder;
 import com.pgh.huutinhdoor.enums.UserRole;
 import com.pgh.huutinhdoor.exception.DuplicateResourceException;
 import com.pgh.huutinhdoor.exception.ResourceNotFoundException;
@@ -27,6 +29,8 @@ public class UserClientService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
+    private final ImageService imageService;
+
 // private String phone;
 //    private String password;
 //    private String email;
@@ -40,6 +44,9 @@ public class UserClientService {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new DuplicateResourceException("Email already exists");
         }
+
+        User user = userMapper.toEntity(request);
+
         Customer customer = customerRepository.findByPhone(request.getPhone())
                 .orElseGet(() -> {
                     Customer newCustomer = Customer.builder()
@@ -48,14 +55,18 @@ public class UserClientService {
                     return customerRepository.save(newCustomer);
                 });
 
-        User user = new User();
-        user.setPhone(request.getPhone());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setEmail(request.getEmail());
-        user.setRole(UserRole.USER);
-        user.setIsActive(true);
         user.setCustomer(customer);
         User savedUser = userRepository.save(user);
+
+        if (request.getAvatar() != null && !request.getAvatar().isEmpty()) {
+            imageService.replacePrimaryImage(
+                    savedUser.getId(),
+                    TargetType.USER,
+                    request.getAvatar(),
+                    UploadFolder.USER
+            );
+        }
         return userMapper.toResponse(savedUser);
     }
 
@@ -75,6 +86,16 @@ public class UserClientService {
             user.setPhone(request.getPhone());
         }
         User saved = userRepository.save(user);
+
+        if (request.getAvatar() != null && !request.getAvatar().isEmpty()) {
+            imageService.replacePrimaryImage(
+                    saved.getId(),
+                    TargetType.USER,
+                    request.getAvatar(),
+                    UploadFolder.USER
+            );
+        }
+
         return userMapper.toResponse(saved);
     }
 
@@ -82,6 +103,7 @@ public class UserClientService {
     public void delete(Long id) {
         User user = userRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("User not found with id " + id));
+        imageService.deleteAllByTarget(id, TargetType.USER);
         user.setIsActive(false);
     }
 

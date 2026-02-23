@@ -34,7 +34,7 @@ public class TicketResponse {
     private TicketType type;
 
     private CustomerShortResponse customer;
-    private List<Long> ticketItemIds;
+    private List<TicketItemResponse> items;
 
 
 }

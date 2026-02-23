@@ -1,6 +1,7 @@
 package com.pgh.huutinhdoor.controller.admin;
 
 import com.pgh.huutinhdoor.dto.request.SupplierCreateRequest;
+import com.pgh.huutinhdoor.dto.request.SupplierUpdateRequest;
 import com.pgh.huutinhdoor.dto.response.admin.SupplierResponse;
 import com.pgh.huutinhdoor.entity.Image;
 import com.pgh.huutinhdoor.entity.Supplier;
@@ -24,45 +25,45 @@ public class AdminSupplierController {
 
     @GetMapping("/{id}")
     public ResponseEntity<SupplierResponse> getSupplier(@PathVariable Long id) {
-        Supplier supplier = supplierService.findByIdOrThrow(id);
-        Image avatar = supplierService.getPrimaryAvatar(id).orElse(null);
-
-        String avatarUrl = (avatar != null && avatar.getUrl() != null)
-                ? avatar.getUrl()
-                : GlobalConstants.SUPPLIER_AVATAR;
-
-        SupplierResponse response = supplierMapper.toAdminResponse(supplier, avatarUrl);
-        return ResponseEntity.ok(response);
+        var sw = supplierService.getWithAvatar(id);
+        return ResponseEntity.ok(
+                supplierMapper.toAdminResponse(sw.supplier(), sw.avatarUrl())
+        );
     }
 
     @GetMapping
-    public ResponseEntity<List<SupplierResponse>> getAllSuppliers() {
-
-        List<Supplier> suppliers = supplierService.getAll();
-        List<SupplierResponse> result = suppliers.stream()
-                .map(supplier -> {
-                    Image avatar = supplierService.getPrimaryAvatar(supplier.getId()).orElse(null);
-                    String avatarUrl = (avatar != null && avatar.getUrl() != null)
-                            ? avatar.getUrl()
-                            : GlobalConstants.SUPPLIER_AVATAR;
-                    return supplierMapper.toAdminResponse(supplier, avatarUrl);
-                })
-                .toList();
-        return ResponseEntity.ok(result);
+    public ResponseEntity<List<SupplierResponse>> getAll() {
+        return ResponseEntity.ok(
+                supplierService.getAllWithAvatar()
+                        .stream()
+                        .map(sw -> supplierMapper.toAdminResponse(
+                                sw.supplier(),
+                                sw.avatarUrl()
+                        ))
+                        .toList()
+        );
     }
 
     @PostMapping
-    public ResponseEntity<SupplierResponse> createSupplier(@RequestBody SupplierCreateRequest request) {
-        Supplier supplier = supplierService.create(request);
-        Image avatar = supplierService.getPrimaryAvatar(supplier.getId()).orElse(null);
+    public ResponseEntity<SupplierResponse> createSupplier(
+            @RequestBody SupplierCreateRequest request) {
 
-        String avatarUrl = (avatar != null && avatar.getUrl() != null)
-                ? avatar.getUrl()
-                : GlobalConstants.SUPPLIER_AVATAR;
-        SupplierResponse response = supplierMapper.toAdminResponse(supplier, avatarUrl);
-
+        var sw = supplierService.createWithAvatar(request);
+        SupplierResponse response = supplierMapper.toAdminResponse(sw.supplier(), sw.avatarUrl());
         return ResponseEntity
-                .created(URI.create("/api/v1/admin/suppliers"+response.getId()) )
+                .created(URI.create("/api/v1/admin/suppliers/" + response.getId()))
                 .body(response);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<SupplierResponse> update(
+            @PathVariable Long id,
+            @RequestBody SupplierUpdateRequest request) {
+
+        var sw = supplierService.update(id, request);
+
+        return ResponseEntity.ok(
+                supplierMapper.toAdminResponse(sw.supplier(), sw.avatarUrl())
+        );
     }
 }

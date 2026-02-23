@@ -14,12 +14,15 @@ import com.pgh.huutinhdoor.mapper.SupplierMapper;
 import com.pgh.huutinhdoor.repository.ImageRepository;
 import com.pgh.huutinhdoor.repository.SupplierRepository;
 import com.pgh.huutinhdoor.util.EntityUtil;
+import com.pgh.huutinhdoor.util.GlobalConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,66 +32,115 @@ public class SupplierService {
     private final ImageRepository imageRepository;
     private final ImageService  imageService;
 
+    public record SupplierWithAvatar(
+            Supplier supplier,
+            String avatarUrl
+    ) {}
+
+
     @Transactional(readOnly = true)
     public Supplier findByIdOrThrow(Long id) {
        return supplierRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Supplier not found with id:" + id));
     }
 
+    @Transactional(readOnly = true)
+    public SupplierWithAvatar getWithAvatar(Long id) {
+
+        Supplier supplier = findByIdOrThrow(id);
+
+        String avatarUrl = imageRepository
+                .findByTargetIdAndTargetTypeAndIsPrimaryTrue(id, TargetType.SUPPLIER)
+                .map(Image::getUrl)
+                .orElse(GlobalConstants.SUPPLIER_AVATAR);
+
+        return new SupplierWithAvatar(supplier, avatarUrl);
+    }
+
 
     @Transactional(readOnly = true)
-    public List<Supplier> getAll(){
-        return  supplierRepository.findAll();
+    public List<SupplierWithAvatar> getAllWithAvatar() {
+        List<Supplier> suppliers = supplierRepository.findAll();
+
+        List<Long> ids = suppliers.stream()
+                .map(Supplier::getId)
+                .toList();
+
+        List<Image> avatars = imageRepository
+                .findByTargetTypeAndTargetIdInAndIsPrimaryTrue(
+                        TargetType.SUPPLIER,
+                        ids
+                );
+
+        Map<Long, String> avatarMap = avatars.stream()
+                .collect(Collectors.toMap(
+                        Image::getTargetId,
+                        Image::getUrl
+                ));
+
+        return suppliers.stream()
+                .map(s -> new SupplierWithAvatar(
+                        s,
+                        avatarMap.getOrDefault(
+                                s.getId(),
+                                GlobalConstants.SUPPLIER_AVATAR
+                        )
+                ))
+                .toList();
     }
 
     @Transactional
-    public Supplier create(SupplierCreateRequest request) {
+    public SupplierWithAvatar createWithAvatar(SupplierCreateRequest request) {
         Supplier supplier = supplierMapper.toEntity(request);
         Supplier savedSupplier = supplierRepository.save(supplier);
 
+        String avatarUrl = GlobalConstants.SUPPLIER_AVATAR;
+
         if (request.getAvatar() != null && !request.getAvatar().isEmpty()) {
-            imageService.replacePrimaryImage(
+            Image image = imageService.replacePrimaryImage(
                     savedSupplier.getId(),
                     TargetType.SUPPLIER,
                     request.getAvatar(),
                     UploadFolder.SUPPLIER
             );
+            avatarUrl = image.getUrl();
         }
-        return savedSupplier;
+
+        return new SupplierWithAvatar(savedSupplier, avatarUrl);
     }
 
     @Transactional
-    public Supplier update(Long id, SupplierUpdateRequest request) {
-        Supplier supplier = supplierRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("Supplier not found with id:" + id));
+    public SupplierWithAvatar update(Long id, SupplierUpdateRequest request) {
+
+        Supplier supplier = findByIdOrThrow(id);
         EntityUtil.copyNoNullProperties(request, supplier);
-        Supplier savedSupplier = supplierRepository.save(supplier);
+
+        String avatarUrl = imageRepository
+                .findByTargetIdAndTargetTypeAndIsPrimaryTrue(id, TargetType.SUPPLIER)
+                .map(Image::getUrl)
+                .orElse(GlobalConstants.SUPPLIER_AVATAR);
 
         if (request.getAvatar() != null && !request.getAvatar().isEmpty()) {
-            imageService.replacePrimaryImage(
-                    savedSupplier.getId(),
+            Image image = imageService.replacePrimaryImage(
+                    supplier.getId(),
                     TargetType.SUPPLIER,
                     request.getAvatar(),
                     UploadFolder.SUPPLIER
             );
+            avatarUrl = image.getUrl();
         }
 
-        return savedSupplier;
+        return new SupplierWithAvatar(supplier, avatarUrl);
     }
+
+
     @Transactional
     public void delete(Long id) {
-        Supplier supplier = supplierRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("Supplier not found with id:" + id));
+        if (!supplierRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Supplier not found with id:" + id);
+        }
         imageService.deleteAllByTarget(id, TargetType.SUPPLIER);
-        supplierRepository.delete(supplier);
+        supplierRepository.deleteById(id);
     }
 
-    @Transactional(readOnly = true)
-    public Optional<Image> getPrimaryAvatar(Long supplierId) {
-        return imageRepository.findByTargetIdAndTargetTypeAndIsPrimaryTrue(supplierId, TargetType.SUPPLIER);
-    }
-
-//    public Image getPrimaryAvatar(Long id) {
-//        return imageService.getAvatar(id, TargetType.SUPPLIER);
-//    }
 }

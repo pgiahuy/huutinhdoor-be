@@ -4,6 +4,7 @@ package com.pgh.huutinhdoor.service;
 import com.pgh.huutinhdoor.dto.request.TicketCreateRequest;
 import com.pgh.huutinhdoor.dto.request.TicketItemCreateRequest;
 import com.pgh.huutinhdoor.dto.request.TicketItemUpdateRequest;
+import com.pgh.huutinhdoor.dto.response.admin.TicketItemResponse;
 import com.pgh.huutinhdoor.dto.response.admin.TicketResponse;
 import com.pgh.huutinhdoor.entity.*;
 import com.pgh.huutinhdoor.enums.PaymentStatus;
@@ -40,6 +41,17 @@ public class TicketService {
     }
 
     @Transactional(readOnly = true)
+    public TicketItemResponse getItem(Long ticketId, Long itemId) {
+
+        TicketItem item = ticketItemRepository
+                .findByIdAndTicketId(itemId, ticketId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Item not found"));
+
+        return ticketItemMapper.toResponse(item);
+    }
+
+    @Transactional(readOnly = true)
     public TicketResponse findByIdOrThrow(Long ticketId){
         Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(()
                 -> new ResourceNotFoundException("Ticket not found with id: " + ticketId));
@@ -69,8 +81,8 @@ public class TicketService {
         return ticketMapper.toResponse(ticket);
     }
 
-    
-    private void addItemForTicket(TicketItemCreateRequest request, Ticket ticket) {
+
+    private Long addItemForTicket(TicketItemCreateRequest request, Ticket ticket) {
         Product product = productService.findByIdOrThrow(request.getProductId());
         Project project = projectService.findByIdOrThrow(request.getProjectId());
 
@@ -79,6 +91,7 @@ public class TicketService {
         item.setProject(project);
         item.setProduct(product);
         ticket.addItem(item);
+        return item.getId();
     }
 
     @Transactional
@@ -95,9 +108,9 @@ public class TicketService {
     }
 
     @Transactional
-    public void addItem(Long ticketId, TicketItemCreateRequest request) {
+    public Long addItem(Long ticketId, TicketItemCreateRequest request) {
         Ticket ticket = this.findById(ticketId);
-        addItemForTicket(request, ticket);
+        return addItemForTicket(request, ticket);
     }
 
 

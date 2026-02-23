@@ -24,30 +24,22 @@ public class SupplierController {
 
     @GetMapping("/{id}")
     public ResponseEntity<SupplierResponse> getSupplier(@PathVariable Long id) {
-        Supplier supplier = supplierService.findByIdOrThrow(id);
-        Image avatar = supplierService.getPrimaryAvatar(id).orElse(null);
-
-        String avatarUrl = (avatar != null && avatar.getUrl() != null)
-                ? avatar.getUrl()
-                : GlobalConstants.SUPPLIER_AVATAR;
-
-        SupplierResponse response = supplierMapper.toClientResponse(supplier, avatarUrl);
-        return ResponseEntity.ok(response);
+        var sw = supplierService.getWithAvatar(id);
+        return ResponseEntity.ok(
+                supplierMapper.toClientResponse(sw.supplier(), sw.avatarUrl())
+        );
     }
 
     @GetMapping
-    public ResponseEntity<List<SupplierResponse>> getAllSuppliers() {
-
-        List<Supplier> suppliers = supplierService.getAll();
-        List<SupplierResponse> result = suppliers.stream()
-                .map(supplier -> {
-                    Image avatar = supplierService.getPrimaryAvatar(supplier.getId()).orElse(null);
-                    String avatarUrl = (avatar != null && avatar.getUrl() != null)
-                            ? avatar.getUrl()
-                            : GlobalConstants.SUPPLIER_AVATAR;
-                    return supplierMapper.toClientResponse(supplier, avatarUrl);
-                })
-                .toList();
-        return ResponseEntity.ok(result);
+    public ResponseEntity<List<SupplierResponse>> getAll() {
+        return ResponseEntity.ok(
+                supplierService.getAllWithAvatar()
+                        .stream()
+                        .map(sw -> supplierMapper.toClientResponse(
+                                sw.supplier(),
+                                sw.avatarUrl()
+                        ))
+                        .toList()
+        );
     }
 }

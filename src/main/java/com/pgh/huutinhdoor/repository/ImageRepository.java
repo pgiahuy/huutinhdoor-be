@@ -9,5 +9,11 @@ import java.util.Optional;
 
 public interface ImageRepository extends JpaRepository<Image, Long> {
     Optional<Image> findByTargetIdAndTargetTypeAndIsPrimaryTrue(Long id, TargetType targetType);
+
+    List<Image> findByTargetTypeAndTargetIdInAndIsPrimaryTrue(
+            TargetType targetType,
+            List<Long> targetIds
+    );
+
     List<Image> findAllByTargetIdAndTargetType(Long targetId, TargetType targetType);
 }

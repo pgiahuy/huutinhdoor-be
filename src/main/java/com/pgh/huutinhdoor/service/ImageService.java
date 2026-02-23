@@ -21,7 +21,7 @@ public class ImageService {
     private final ImageRepository imageRepository;
     private final CloudinaryService cloudinaryService;
 
-    public void replacePrimaryImage(Long targetId, TargetType targetType,
+    public Image replacePrimaryImage(Long targetId, TargetType targetType,
                                     MultipartFile file, UploadFolder folder ) {
 
         imageRepository
@@ -40,8 +40,7 @@ public class ImageService {
                 .targetId(targetId)
                 .targetType(targetType)
                 .build();
-
-        imageRepository.save(image);
+        return imageRepository.save(image);
     }
 
 //    public Image getAvatar(Long targetId,  TargetType targetType) {
