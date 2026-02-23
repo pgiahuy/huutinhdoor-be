@@ -24,7 +24,6 @@ public class Supplier {
     @Email
     private String email;
 
-    private String avatar;
 
     @Column(columnDefinition = "TEXT")
     private String note;

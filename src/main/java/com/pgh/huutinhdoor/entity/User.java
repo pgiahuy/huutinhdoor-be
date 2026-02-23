@@ -31,8 +31,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole role =  UserRole.USER;
 
-    private String avatar;
-
     @Column(nullable = false)
     private Boolean isActive = true ;
 

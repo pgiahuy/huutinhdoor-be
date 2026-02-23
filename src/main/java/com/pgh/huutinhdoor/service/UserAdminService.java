@@ -1,19 +1,14 @@
 package com.pgh.huutinhdoor.service;
 
-import com.pgh.huutinhdoor.dto.request.UserCreateRequest;
-import com.pgh.huutinhdoor.dto.request.UserUpdateRequest;
-import com.pgh.huutinhdoor.dto.response.UserResponse;
-import com.pgh.huutinhdoor.entity.Customer;
+import com.pgh.huutinhdoor.dto.request.user.UserCreateRequest;
+import com.pgh.huutinhdoor.dto.request.user.UserUpdateRequest;
+import com.pgh.huutinhdoor.entity.Image;
 import com.pgh.huutinhdoor.entity.User;
 import com.pgh.huutinhdoor.enums.TargetType;
-import com.pgh.huutinhdoor.enums.UploadFolder;
-import com.pgh.huutinhdoor.exception.DuplicateResourceException;
-import com.pgh.huutinhdoor.exception.ResourceNotFoundException;
 import com.pgh.huutinhdoor.mapper.UserMapper;
-import com.pgh.huutinhdoor.repository.CustomerRepository;
+import com.pgh.huutinhdoor.repository.ImageRepository;
 import com.pgh.huutinhdoor.repository.UserRepository;
-import com.pgh.huutinhdoor.util.EntityUtil;
-import lombok.RequiredArgsConstructor;
+import com.pgh.huutinhdoor.util.GlobalConstants;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,98 +16,56 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
-public class UserAdminService {
-    private final UserRepository userRepository;
+public class UserAdminService extends UserServiceBase {
+
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
 
-    private final ImageService imageService;
-
-    @Transactional(readOnly = true)
-    public List<UserResponse> getAll() {
-       return userRepository.findAll().stream().map(userMapper::toResponse).toList();
+    public UserAdminService(UserRepository userRepository, ImageRepository imageRepository, ImageService imageService, PasswordEncoder passwordEncoder, UserMapper userMapper) {
+        super(userRepository, imageRepository, imageService, passwordEncoder);
+        this.userMapper = userMapper;
     }
 
     @Transactional(readOnly = true)
-    public UserResponse findByIdOrThrow(Long id) {
-        User user = userRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("User not found with id " + id));
-        return userMapper.toResponse(user);
+    public UserWithAvatar getWithAvatar(Long id) {
+        return super.getWithAvatar(id);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserWithAvatar> getAll() {
+        List<User> users = userRepository.findAll();
+
+        return users.stream()
+                .map(user -> {
+                    String avatarUrl = imageRepository
+                            .findByTargetIdAndTargetTypeAndIsPrimaryTrue(user.getId(), TargetType.USER)
+                            .map(Image::getUrl)
+                            .orElse(GlobalConstants.USER_AVATAR);
+                    return new UserWithAvatar(user, avatarUrl);
+                })
+                .toList();
     }
 
     @Transactional
-    public UserResponse create(UserCreateRequest request) {
-        if (userRepository.existsByPhone(request.getPhone())) {
-            throw new RuntimeException("Phone already exists");
-        }
-        if (userRepository.existsByEmail(request.getPhone())) {
-            throw new RuntimeException("Email already exists");
-        }
+    public UserWithAvatar create(UserCreateRequest request) {
+        checkDuplicate(request.getEmail(), request.getPhone(), null);
 
         User user = userMapper.toEntity(request);
-        user.setPassword(
-                passwordEncoder.encode(request.getPassword())
-        );
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         User savedUser = userRepository.save(user);
 
-        if (request.getAvatar() != null && !request.getAvatar().isEmpty()) {
-            imageService.replacePrimaryImage(
-                    savedUser.getId(),
-                    TargetType.USER,
-                    request.getAvatar(),
-                    UploadFolder.USER
-            );
-        }
-        return userMapper.toResponse(savedUser);
+        String avatarUrl = handleAvatar(savedUser, request.getAvatar());
+        return new UserWithAvatar(savedUser, avatarUrl);
     }
 
     @Transactional
-    public UserResponse update(UserUpdateRequest request, Long id) {
-
-        User user = userRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("User not found with id " + id));
-
-        validateDuplicate(request, user);
-
-        EntityUtil.copyNoNullProperties(request, user);
-        User saved = userRepository.save(user);
-
-        if (request.getAvatar() != null && !request.getAvatar().isEmpty()) {
-            imageService.replacePrimaryImage(
-                    saved.getId(),
-                    TargetType.USER,
-                    request.getAvatar(),
-                    UploadFolder.USER
-            );
-        }
-        return userMapper.toResponse(saved);
+    public UserWithAvatar update(Long id, UserUpdateRequest request) {
+        return super.update(id, request);
     }
+
     @Transactional
     public void delete(Long id) {
-        User user = userRepository.findById(id).orElseThrow(()
-                -> new ResourceNotFoundException("User not found with id " + id));
-        userRepository.delete(user);
+        User user = findByIdOrThrow(id);
+        user.setIsActive(false);
+        userRepository.save(user);
     }
-
-    private void validateDuplicate(UserUpdateRequest request, User user) {
-        checkDuplicatePhoneAndEmail(request, user, userRepository);
-    }
-
-    static void checkDuplicatePhoneAndEmail(UserUpdateRequest request, User user, UserRepository userRepository) {
-        if (request.getEmail() != null &&
-                !request.getEmail().equals(user.getEmail()) &&
-                userRepository.existsByEmail(request.getEmail())) {
-
-            throw new DuplicateResourceException("Email already exists");
-        }
-        if (request.getPhone() != null &&
-                !request.getPhone().equals(user.getPhone()) &&
-                userRepository.existsByPhone(request.getPhone())) {
-
-            throw new DuplicateResourceException("Phone already exists");
-        }
-    }
-
-
 }

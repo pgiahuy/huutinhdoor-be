@@ -1,6 +1,6 @@
 package com.pgh.huutinhdoor.mapper;
 
-import com.pgh.huutinhdoor.dto.request.UserCreateRequest;
+import com.pgh.huutinhdoor.dto.request.user.UserCreateRequest;
 import com.pgh.huutinhdoor.dto.response.UserResponse;
 import com.pgh.huutinhdoor.entity.User;
 import com.pgh.huutinhdoor.enums.UserRole;
@@ -8,11 +8,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserMapper {
-    public UserResponse toResponse(User user) {
+    public UserResponse toResponse(User user, String avatarUrl) {
         return UserResponse.builder()
                 .id(user.getId())
                 .phone(user.getPhone())
                 .email(user.getEmail())
+                .avatar(avatarUrl)
                 .role(user.getRole())
                 .customerId(
                         user.getCustomer() != null ? user.getCustomer().getId() : null

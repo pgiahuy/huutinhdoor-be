@@ -1,11 +1,6 @@
-package com.pgh.huutinhdoor.dto.request;
+package com.pgh.huutinhdoor.dto.request.user;
 
-import com.pgh.huutinhdoor.entity.Customer;
 import com.pgh.huutinhdoor.enums.UserRole;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
