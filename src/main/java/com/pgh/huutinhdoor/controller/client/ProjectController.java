@@ -21,19 +21,6 @@ public class ProjectController {
     private final ProjectService projectService;
     private final ProjectMapper projectMapper;
 
-    @GetMapping
-    public ResponseEntity<List<ProjectResponse>> getAll() {
-        List<ProjectResponse> result = projectService.getAll().stream()
-                .map(projectMapper::toClientResponse).toList();
-        return ResponseEntity.ok(result);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ProjectResponse> getById(@PathVariable Long id) {
-        Project project = projectService.findByIdOrThrow(id);
-        return ResponseEntity.ok(projectMapper.toClientResponse(project));
-    }
-
 
 
 

@@ -1,42 +1,36 @@
 package com.pgh.huutinhdoor.entity;
 
-import com.pgh.huutinhdoor.enums.PricingType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 @Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TicketItem {
+public class ProjectItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ticket_id", nullable = false)
-    private Ticket ticket;
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    private Project project;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
-
-    @Enumerated(EnumType.STRING)
-    private PricingType pricingType;
 
     private Integer quantity;
 
     private Double width;
     private Double height;
-
     private Double length;
 
-    private BigDecimal priceAtTime;
-    private BigDecimal totalPrice;
+    private Double unitPrice;
+    private Double totalPrice;
 }

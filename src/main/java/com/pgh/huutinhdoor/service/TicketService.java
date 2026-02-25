@@ -8,6 +8,7 @@ import com.pgh.huutinhdoor.dto.response.admin.TicketItemResponse;
 import com.pgh.huutinhdoor.dto.response.admin.TicketResponse;
 import com.pgh.huutinhdoor.entity.*;
 import com.pgh.huutinhdoor.enums.PaymentStatus;
+import com.pgh.huutinhdoor.enums.PricingType;
 import com.pgh.huutinhdoor.enums.TicketStatus;
 import com.pgh.huutinhdoor.exception.ResourceNotFoundException;
 import com.pgh.huutinhdoor.mapper.TicketItemMapper;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -28,10 +30,21 @@ public class TicketService {
 
     private final CustomerService customerService;
     private final ProductService productService;
-    private final ProjectService projectService;
+    private final PricingService pricingService;
 
     private  final TicketMapper ticketMapper;
     private  final TicketItemMapper ticketItemMapper;
+
+    public void recalculateTicket(Long ticketId) {
+
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with id: " + ticketId));
+
+        BigDecimal total = pricingService.calculateTicketTotal(ticket);
+        ticket.setTotalAmount(total);
+        ticketRepository.save(ticket);
+    }
+
 
     @Transactional(readOnly = true)
     public List<TicketResponse> getAll(){
@@ -47,7 +60,6 @@ public class TicketService {
                 .findByIdAndTicketId(itemId, ticketId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Item not found"));
-
         return ticketItemMapper.toResponse(item);
     }
 
@@ -84,11 +96,9 @@ public class TicketService {
 
     private Long addItemForTicket(TicketItemCreateRequest request, Ticket ticket) {
         Product product = productService.findByIdOrThrow(request.getProductId());
-        Project project = projectService.findByIdOrThrow(request.getProjectId());
 
         TicketItem item = ticketItemMapper.toEntity(request);
 
-        item.setProject(project);
         item.setProduct(product);
         ticket.addItem(item);
         return item.getId();
@@ -102,8 +112,6 @@ public class TicketService {
                 .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
 
         Product product = productService.findByIdOrThrow(request.getProductId());
-        Project project = projectService.findByIdOrThrow(request.getProjectId());
-        item.setProject(project);
         item.setProduct(product);
     }
 

@@ -13,14 +13,12 @@ import java.util.Set;
 @Component
 public class ProjectMapper {
 
-    public Project toEntity(ProjectCreateRequest req,
-                            Ticket ticket, Set<Category> categories) {
+    public Project toEntity(ProjectCreateRequest req) {
         return Project.builder()
                 .title(req.getTitle())
                 .description(req.getDescription())
                 .location(req.getLocation())
-                .ticket(ticket)
-                .categories(categories)
+                .customerName(req.getCustomerName())
                 .build();
     }
 
@@ -33,9 +31,7 @@ public class ProjectMapper {
                 .title(project.getTitle())
                 .description(project.getDescription())
                 .location(project.getLocation())
-                .completionDate(project.getCompletionDate())
-                .categoryIds(project.getCategories() != null ?
-                        project.getCategories().stream().map(Category::getId).toList() : null)
+                .completedAt(project.getCompletedAt())
                 .build();
     }
 
@@ -46,12 +42,15 @@ public class ProjectMapper {
         return com.pgh.huutinhdoor.dto.response.admin.ProjectResponse.builder()
                 .id(project.getId())
                 .title(project.getTitle())
+                .slug(project.getSlug())
                 .description(project.getDescription())
                 .location(project.getLocation())
-                .completionDate(project.getCompletionDate())
-                .ticketId(project.getTicket() != null ? project.getTicket().getId() : null)
-                .categoryIds(project.getCategories() != null ?
-                        project.getCategories().stream().map(Category::getId).toList() : null)
+                .isPublished(project.getIsPublished())
+                .publishedAt(project.getPublishedAt())
+                .sourceTicketId(project.getSourceTicketId())
+                .viewCount(project.getViewCount())
+                .completedAt(project.getCompletedAt())
+                .updatedAt(project.getUpdatedAt())
                 .build();
     }
 

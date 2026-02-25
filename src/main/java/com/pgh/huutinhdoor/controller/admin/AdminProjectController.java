@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 import java.util.List;
@@ -22,40 +23,23 @@ public class AdminProjectController {
     private final ProjectService projectService;
     private final ProjectMapper projectMapper;
 
-    @GetMapping
-    public ResponseEntity<List<ProjectResponse>> getAll(){
-        List<ProjectResponse> result = projectService.getAll().stream()
-                .map(projectMapper::toAdminResponse)
-                .toList();
-        return ResponseEntity.ok(result);
-    }
+    @PostMapping("/publish-from-ticket")
+    public ResponseEntity<ProjectResponse> publishFromTicket(
+            @RequestParam Long ticketId,
+            @RequestParam String description,
+            @RequestParam(required = false) MultipartFile thumbnail,
+            @RequestParam(required = false) List<MultipartFile> images
+    ) {
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ProjectResponse> getById(@PathVariable Long id){
-        Project project = projectService.findByIdOrThrow(id);
-        return ResponseEntity.ok(projectMapper.toAdminResponse(project));
-    }
+        ProjectCreateRequest request = ProjectCreateRequest.builder()
+                .description(description)
+                .thumbnail(thumbnail)
+                .images(images)
+                .build();
 
-    @PostMapping
-    public ResponseEntity<ProjectResponse> create(@Valid @RequestBody ProjectCreateRequest request){
-        ProjectResponse response = projectService.create(request);
-        return  ResponseEntity
-                .created(URI.create("/api/v1/admin/projects"+response.getId()))
-                .body(response);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<ProjectResponse> update(
-            @PathVariable Long id,
-            @Valid @RequestBody ProjectUpdateRequest request){
-        return ResponseEntity.ok(projectService.update(id,request));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ProjectResponse> delete(
-            @PathVariable Long id){
-        projectService.delete(id);
-        return ResponseEntity.noContent().build();
+        Project project = projectService.publishFromTicket(ticketId, request);
+        return ResponseEntity.created(URI.create("/api/v1/admin/projects/" + project.getId()))
+                .body(projectMapper.toAdminResponse(project));
     }
 
 }

@@ -4,6 +4,7 @@ import com.pgh.huutinhdoor.dto.response.CloudinaryResponse;
 import com.pgh.huutinhdoor.entity.Image;
 import com.pgh.huutinhdoor.enums.TargetType;
 import com.pgh.huutinhdoor.enums.UploadFolder;
+import com.pgh.huutinhdoor.exception.BadRequestException;
 import com.pgh.huutinhdoor.exception.ResourceNotFoundException;
 import com.pgh.huutinhdoor.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,11 +44,6 @@ public class ImageService {
         return imageRepository.save(image);
     }
 
-//    public Image getAvatar(Long targetId,  TargetType targetType) {
-//        return imageRepository.findByTargetIdAndTargetTypeAndIsPrimaryTrue(targetId,targetType).orElseThrow(()
-//                -> new ResourceNotFoundException("Image not found with id " + targetId + " and target type " + targetType));
-//    }
-
     public void deleteAllByTarget(Long targetId, TargetType type) {
         List<Image> images = imageRepository.findAllByTargetIdAndTargetType(targetId, type);
 
@@ -55,5 +51,32 @@ public class ImageService {
             cloudinaryService.deleteFile(image.getPublicId());
             imageRepository.delete(image);
         }
+    }
+
+    public void deleteById(Long imageId) {
+        Image image = imageRepository.findById(imageId)
+                .orElseThrow(() -> new ResourceNotFoundException("Image not found with id: " + imageId));
+
+        cloudinaryService.deleteFile(image.getPublicId());
+        imageRepository.delete(image);
+    }
+
+
+    public Image uploadAdditionalImage(Long targetId, TargetType targetType, MultipartFile file, UploadFolder folder) {
+        if (file == null || file.isEmpty()) {
+            throw new BadRequestException("File is empty");
+        }
+
+        CloudinaryResponse response = cloudinaryService.uploadFile(file, folder);
+
+        Image image = Image.builder()
+                .targetId(targetId)
+                .targetType(targetType)
+                .url(response.getSecure_url())
+                .publicId(response.getPublic_id())
+                .isPrimary(false)
+                .build();
+
+        return imageRepository.save(image);
     }
 }

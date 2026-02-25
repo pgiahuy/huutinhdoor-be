@@ -1,5 +1,6 @@
 package com.pgh.huutinhdoor.entity;
 
+import com.pgh.huutinhdoor.enums.PricingType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +22,9 @@ public class Product {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Enumerated(EnumType.STRING)
+    private PricingType pricingType;
+
     private Double price;
     private Double costPrice;
     private Integer stockQuantity;
@@ -30,4 +34,5 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
+
 }
