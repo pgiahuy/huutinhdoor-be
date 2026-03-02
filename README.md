@@ -28,7 +28,7 @@
 - Xem tiến độ thực hiện, tình trạng vật tư và nhân sự
 
 ### 6️. Quản lý nhà cung cấp
-- Thêm, sửa, xoá nhà cung cấp
+- CRUD nhà cung cấp
 - Theo dõi nhập vật tư, sản phẩm từ nhà cung cấp
 - Quản lý công nợ với nhà cung cấp
 
