@@ -5,7 +5,9 @@ import com.pgh.huutinhdoor.dto.response.client.CustomerResponse;
 
 
 import com.pgh.huutinhdoor.entity.Customer;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CustomerMapper {
     public Customer toEntity(CustomerCreateRequest request) {
         return Customer.builder()

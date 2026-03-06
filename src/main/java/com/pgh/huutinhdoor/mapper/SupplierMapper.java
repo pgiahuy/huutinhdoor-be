@@ -5,7 +5,9 @@ import com.pgh.huutinhdoor.dto.response.admin.SupplierResponse;
 import com.pgh.huutinhdoor.entity.Image;
 import com.pgh.huutinhdoor.entity.Supplier;
 import com.pgh.huutinhdoor.util.GlobalConstants;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SupplierMapper {
 
     public Supplier toEntity(SupplierCreateRequest request) {

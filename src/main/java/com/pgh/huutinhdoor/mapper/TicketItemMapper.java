@@ -23,9 +23,6 @@ public class TicketItemMapper {
                 .productId(
                         ticketItem.getProduct()!=null ? ticketItem.getProduct().getId() : null
                 )
-                .projectId(
-                        ticketItem.getProject()!=null ? ticketItem.getProject().getId() : null
-                )
                 .build();
     }
 }
