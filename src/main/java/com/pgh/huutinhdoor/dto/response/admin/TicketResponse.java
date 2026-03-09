@@ -25,6 +25,7 @@ public class TicketResponse {
     private String address;
 
     private LocalDateTime deadline;
+    private LocalDateTime completeAt;
 
     private BigDecimal totalAmount;
     private BigDecimal  deposit;

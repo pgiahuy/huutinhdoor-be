@@ -33,6 +33,8 @@ public class TicketUpdateRequest {
 
     private BigDecimal totalAmount;
 
+    private LocalDateTime completedAt;
+
     private BigDecimal  deposit;
 
     private PaymentStatus paymentStatus;

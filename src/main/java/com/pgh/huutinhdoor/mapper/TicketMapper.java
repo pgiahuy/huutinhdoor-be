@@ -15,6 +15,7 @@ public class TicketMapper {
                 .title(ticket.getTitle())
                 .address(ticket.getAddress())
                 .deadline(ticket.getDeadline())
+                .completeAt(ticket.getCompletedAt())
                 .totalAmount(ticket.getTotalAmount())
                 .deposit(ticket.getDeposit())
                 .paymentStatus(ticket.getPaymentStatus())

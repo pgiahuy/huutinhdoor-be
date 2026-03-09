@@ -21,4 +21,6 @@ public class ProjectResponse {
     private String description;
     private String location;
     private LocalDateTime completedAt;
+    private LocalDateTime updatedAt;
+    private List<String> tags;
 }

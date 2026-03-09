@@ -52,6 +52,8 @@ public class Ticket {
     @Enumerated(EnumType.STRING)
     private TicketType type = TicketType.PRODUCT;
 
+    private LocalDateTime completedAt;
+
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<TicketItem> items = new ArrayList<>();

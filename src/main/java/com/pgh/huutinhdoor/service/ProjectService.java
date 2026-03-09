@@ -2,6 +2,7 @@ package com.pgh.huutinhdoor.service;
 
 import com.pgh.huutinhdoor.dto.request.ProjectCreateRequest;
 import com.pgh.huutinhdoor.dto.request.ProjectUpdateRequest;
+import com.pgh.huutinhdoor.entity.Customer;
 import com.pgh.huutinhdoor.entity.Project;
 import com.pgh.huutinhdoor.entity.Ticket;
 import com.pgh.huutinhdoor.enums.TargetType;
@@ -49,10 +50,13 @@ public class ProjectService {
         project.setLocation(ticket.getAddress());
         project.setCustomerName(ticket.getCustomer().getName());
 
+        project.setCompletedAt(ticket.getCompletedAt());
+
         if (ticket.getItems() != null) {
             List<String> productTags = ticket.getItems().stream()
                     .map(item -> item.getProduct() != null ? item.getProduct().getName() : null)
                     .filter(Objects::nonNull)
+                    .map(project::generateSlug)
                     .distinct()
                     .toList();
 
@@ -79,6 +83,7 @@ public class ProjectService {
         if (request.getLocation() != null) project.setLocation(request.getLocation());
         if (request.getCustomerName() != null) project.setCustomerName(request.getCustomerName());
 
+
         handleThumbnail(project, request.getThumbnail());
 
         if (request.getImageIdsToRemove() != null) {
@@ -91,7 +96,13 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-
+    @Transactional
+    public void deleteById(Long id) {
+        Project project = projectRepository.findById(id).orElseThrow(()
+                -> new ResourceNotFoundException("Project not found with id " + id));
+        imageService.deleteAllByTarget(id, TargetType.PROJECT);
+        projectRepository.delete(project);
+    }
     private void handleThumbnail(Project project, MultipartFile thumbnail) {
         if (thumbnail != null && !thumbnail.isEmpty()) {
             imageService.replacePrimaryImage(

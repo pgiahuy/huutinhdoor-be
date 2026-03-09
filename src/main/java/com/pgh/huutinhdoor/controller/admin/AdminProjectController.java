@@ -35,4 +35,34 @@ public class AdminProjectController {
                 .body(projectMapper.toAdminResponse(project));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ProjectResponse> updateProject(
+            @PathVariable Long id,
+            @ModelAttribute ProjectUpdateRequest request
+    ){
+        var proj = projectService.updateProject(id, request);
+
+        return ResponseEntity.ok(
+                projectMapper.toAdminResponse(proj)
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        projectService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+//    private String title;
+//    private String description;
+//
+//    private Boolean isPublished;
+//
+//    private MultipartFile thumbnail;
+//    private List<MultipartFile> images;
+//
+//    private List<Long> imageIdsToRemove;
+//
+//    private String location;
+//    private String customerName;
+
 }

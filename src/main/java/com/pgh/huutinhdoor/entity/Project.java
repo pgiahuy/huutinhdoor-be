@@ -64,7 +64,7 @@ public class Project {
         this.slug = generateSlug(this.title);
     }
 
-    private String generateSlug(String title) {
+    public String generateSlug(String title) {
         if (title == null) return null;
         String normalized = Normalizer.normalize(title, Normalizer.Form.NFD);
         return normalized.toLowerCase()

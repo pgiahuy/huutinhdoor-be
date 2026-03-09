@@ -27,4 +27,5 @@ public class ProjectResponse {
     private Integer viewCount;
     private LocalDateTime completedAt;
     private LocalDateTime updatedAt;
+    private List<String> tags;
 }

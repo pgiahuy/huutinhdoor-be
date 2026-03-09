@@ -25,6 +25,7 @@ public class ProjectMapper {
                 .description(project.getDescription())
                 .location(project.getLocation())
                 .completedAt(project.getCompletedAt())
+                .tags(project.getTags())
                 .build();
     }
 
@@ -44,6 +45,7 @@ public class ProjectMapper {
                 .viewCount(project.getViewCount())
                 .completedAt(project.getCompletedAt())
                 .updatedAt(project.getUpdatedAt())
+                .tags(project.getTags())
                 .build();
     }
 
