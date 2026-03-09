@@ -13,14 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 public class ProjectCreateRequest {
 
-    @NotBlank
-    private String title;
-
     private String description;
-
     private MultipartFile thumbnail;
     private List<MultipartFile> images;
 
-    private String location;
-    private String customerName;
 }

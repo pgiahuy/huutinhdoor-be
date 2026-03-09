@@ -8,6 +8,7 @@ import com.pgh.huutinhdoor.mapper.ProjectMapper;
 import com.pgh.huutinhdoor.service.ProjectService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,19 +24,11 @@ public class AdminProjectController {
     private final ProjectService projectService;
     private final ProjectMapper projectMapper;
 
-    @PostMapping("/publish-from-ticket")
+    @PostMapping(value = "/publish-from-ticket", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProjectResponse> publishFromTicket(
             @RequestParam Long ticketId,
-            @RequestParam String description,
-            @RequestParam(required = false) MultipartFile thumbnail,
-            @RequestParam(required = false) List<MultipartFile> images
+            @ModelAttribute ProjectCreateRequest request
     ) {
-
-        ProjectCreateRequest request = ProjectCreateRequest.builder()
-                .description(description)
-                .thumbnail(thumbnail)
-                .images(images)
-                .build();
 
         Project project = projectService.publishFromTicket(ticketId, request);
         return ResponseEntity.created(URI.create("/api/v1/admin/projects/" + project.getId()))

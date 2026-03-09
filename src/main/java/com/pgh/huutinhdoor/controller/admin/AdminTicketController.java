@@ -1,11 +1,11 @@
 package com.pgh.huutinhdoor.controller.admin;
 
 
-import com.pgh.huutinhdoor.dto.request.TicketCreateRequest;
-import com.pgh.huutinhdoor.dto.request.TicketItemCreateRequest;
-import com.pgh.huutinhdoor.dto.request.TicketItemUpdateRequest;
+import com.pgh.huutinhdoor.dto.request.*;
+import com.pgh.huutinhdoor.dto.response.admin.SupplierResponse;
 import com.pgh.huutinhdoor.dto.response.admin.TicketItemResponse;
 import com.pgh.huutinhdoor.dto.response.admin.TicketResponse;
+import com.pgh.huutinhdoor.mapper.TicketMapper;
 import com.pgh.huutinhdoor.service.TicketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +40,18 @@ public class AdminTicketController {
                 .body(result);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<TicketResponse> update(
+            @PathVariable Long id,
+            @RequestBody TicketUpdateRequest request) {
+
+        var ticket = ticketService.updateTicket(id, request);
+
+        return  ResponseEntity.ok(ticket);
+    }
+
+
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTicketById(@PathVariable Long id) {
         ticketService.delete(id);
@@ -47,13 +59,18 @@ public class AdminTicketController {
     }
 
 
-//   =================== ITEM ========================
 
     @GetMapping("/{id}/items/{itemId}")
     public ResponseEntity<TicketItemResponse> getItem(
             @PathVariable Long id,
             @PathVariable Long itemId) {
         return ResponseEntity.ok(ticketService.getItem(id, itemId));
+    }
+
+    @GetMapping("/{id}/items")
+    public ResponseEntity<List<TicketItemResponse>> getItem(
+            @PathVariable Long id) {
+        return ResponseEntity.ok(ticketService.getItems(id));
     }
 
     @PostMapping("/{id}/items")

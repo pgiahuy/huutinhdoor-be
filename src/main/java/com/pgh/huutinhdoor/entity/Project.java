@@ -6,7 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.text.Normalizer;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Data
@@ -26,6 +28,9 @@ public class Project {
 
     @Column(unique = true)
     private String slug;
+
+    @Column
+    private List<String> tags;
 
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -50,10 +55,22 @@ public class Project {
     @PrePersist
     public void prePersist() {
         this.publishedAt = LocalDateTime.now();
+        this.slug = generateSlug(this.title);
     }
 
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
+        this.slug = generateSlug(this.title);
+    }
+
+    private String generateSlug(String title) {
+        if (title == null) return null;
+        String normalized = Normalizer.normalize(title, Normalizer.Form.NFD);
+        return normalized.toLowerCase()
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+                .replaceAll("[^a-z0-9\\s]", "")
+                .replaceAll("\\s+", "-")
+                .replaceAll("^-|-$", "");
     }
 }

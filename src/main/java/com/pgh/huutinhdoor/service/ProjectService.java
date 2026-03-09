@@ -18,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +45,21 @@ public class ProjectService {
         project.setPublishedAt(LocalDateTime.now());
         project.setIsPublished(true);
 
+        project.setSourceTicketId(ticket.getId());
+        project.setLocation(ticket.getAddress());
+        project.setCustomerName(ticket.getCustomer().getName());
+
+        if (ticket.getItems() != null) {
+            List<String> productTags = ticket.getItems().stream()
+                    .map(item -> item.getProduct() != null ? item.getProduct().getName() : null)
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .toList();
+
+            project.setTags(productTags);
+        }
+
+
         Project savedProject = projectRepository.save(project);
 
         handleThumbnail(savedProject, request.getThumbnail());
@@ -59,6 +76,8 @@ public class ProjectService {
         if (request.getTitle() != null) project.setTitle(request.getTitle());
         if (request.getDescription() != null) project.setDescription(request.getDescription());
         if (request.getIsPublished() != null) project.setIsPublished(request.getIsPublished());
+        if (request.getLocation() != null) project.setLocation(request.getLocation());
+        if (request.getCustomerName() != null) project.setCustomerName(request.getCustomerName());
 
         handleThumbnail(project, request.getThumbnail());
 
@@ -68,6 +87,7 @@ public class ProjectService {
             );
         }
         handleGalleryImages(project, request.getImages());
+
         return projectRepository.save(project);
     }
 

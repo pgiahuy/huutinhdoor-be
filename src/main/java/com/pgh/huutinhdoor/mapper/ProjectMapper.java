@@ -13,14 +13,7 @@ import java.util.Set;
 @Component
 public class ProjectMapper {
 
-    public Project toEntity(ProjectCreateRequest req) {
-        return Project.builder()
-                .title(req.getTitle())
-                .description(req.getDescription())
-                .location(req.getLocation())
-                .customerName(req.getCustomerName())
-                .build();
-    }
+
 
     public ProjectResponse toClientResponse(Project project) {
         if (project == null) {

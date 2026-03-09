@@ -23,19 +23,18 @@ public class CustomerMapper {
                 .name(customer.getName())
                 .phone(customer.getPhone())
                 .address(customer.getAddress())
-                .userId(customer.getUser().getId())
+                .userId(customer.getUser() != null ? customer.getUser().getId() : null)
                 .build();
     }
 
     public com.pgh.huutinhdoor.dto.response.admin.CustomerResponse toAdminResponse(Customer customer) {
-        return com.pgh.huutinhdoor.dto.response.admin.CustomerResponse
-                .builder()
+        return com.pgh.huutinhdoor.dto.response.admin.CustomerResponse.builder()
                 .id(customer.getId())
                 .name(customer.getName())
                 .phone(customer.getPhone())
                 .address(customer.getAddress())
                 .note(customer.getNote())
-                .userId(customer.getUser().getId())
+                .userId(customer.getUser() != null ? customer.getUser().getId() : null)
                 .build();
     }
 

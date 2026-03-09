@@ -4,6 +4,7 @@ package com.pgh.huutinhdoor.service;
 import com.pgh.huutinhdoor.dto.request.TicketCreateRequest;
 import com.pgh.huutinhdoor.dto.request.TicketItemCreateRequest;
 import com.pgh.huutinhdoor.dto.request.TicketItemUpdateRequest;
+import com.pgh.huutinhdoor.dto.request.TicketUpdateRequest;
 import com.pgh.huutinhdoor.dto.response.admin.TicketItemResponse;
 import com.pgh.huutinhdoor.dto.response.admin.TicketResponse;
 import com.pgh.huutinhdoor.entity.*;
@@ -15,6 +16,7 @@ import com.pgh.huutinhdoor.mapper.TicketItemMapper;
 import com.pgh.huutinhdoor.mapper.TicketMapper;
 import com.pgh.huutinhdoor.repository.TicketItemRepository;
 import com.pgh.huutinhdoor.repository.TicketRepository;
+import com.pgh.huutinhdoor.util.EntityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,6 +66,13 @@ public class TicketService {
     }
 
     @Transactional(readOnly = true)
+    public List<TicketItemResponse> getItems(Long ticketId) {
+        return ticketItemRepository.findAll().stream()
+                .map(ticketItemMapper::toResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public TicketResponse findByIdOrThrow(Long ticketId){
         Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(()
                 -> new ResourceNotFoundException("Ticket not found with id: " + ticketId));
@@ -89,6 +98,16 @@ public class TicketService {
                 addItemForTicket(itemReq, ticket);
             }
         }
+        ticketRepository.save(ticket);
+        return ticketMapper.toResponse(ticket);
+    }
+
+    @Transactional
+    public TicketResponse updateTicket(Long id, TicketUpdateRequest request) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with id: " + id));
+        EntityUtil.copyNoNullProperties(request, ticket);
+
         ticketRepository.save(ticket);
         return ticketMapper.toResponse(ticket);
     }

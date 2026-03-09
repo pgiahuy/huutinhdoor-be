@@ -12,7 +12,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/")
 @RequiredArgsConstructor
 public class CategoryController {
 
@@ -35,7 +35,7 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.get(id));
     }
 
-    @GetMapping("/categories")
+    @GetMapping("/admin/categories")
     public ResponseEntity<List<CategoryResponse>> getAllCategories() {
         return ResponseEntity.ok(categoryService.getAll());
     }
