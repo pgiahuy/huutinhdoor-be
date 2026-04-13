@@ -22,13 +22,7 @@ public class UserController {
         var userWithAvatar = userClientService.getWithAvatar(id);
         return ResponseEntity.ok(userWithAvatar);
     }
-    @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody UserCreateRequest request) {
-        var userWithAvatar = userClientService.create(request);
-        return ResponseEntity.created(URI.create("/api/v1/admin/users"+userWithAvatar.user().getId()))
-                .body(userWithAvatar);
 
-    }
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserUpdateRequest request) {
         var userWithAvatar = userClientService.update(id, request);

@@ -2,6 +2,7 @@ package com.pgh.huutinhdoor.service;
 
 import com.pgh.huutinhdoor.dto.request.user.UserCreateRequest;
 import com.pgh.huutinhdoor.dto.request.user.UserUpdateRequest;
+import com.pgh.huutinhdoor.dto.response.UserResponse;
 import com.pgh.huutinhdoor.entity.Image;
 import com.pgh.huutinhdoor.entity.User;
 import com.pgh.huutinhdoor.enums.TargetType;
@@ -18,11 +19,10 @@ import java.util.List;
 @Service
 public class UserAdminService extends UserServiceBase {
 
-    private final UserMapper userMapper;
+
 
     public UserAdminService(UserRepository userRepository, ImageRepository imageRepository, ImageService imageService, PasswordEncoder passwordEncoder, UserMapper userMapper) {
-        super(userRepository, imageRepository, imageService, passwordEncoder);
-        this.userMapper = userMapper;
+        super(userRepository, imageRepository, imageService, passwordEncoder, userMapper);
     }
 
     @Transactional(readOnly = true)
@@ -40,7 +40,8 @@ public class UserAdminService extends UserServiceBase {
                             .findByTargetIdAndTargetTypeAndIsPrimaryTrue(user.getId(), TargetType.USER)
                             .map(Image::getUrl)
                             .orElse(GlobalConstants.USER_AVATAR);
-                    return new UserWithAvatar(user, avatarUrl);
+                    UserResponse userResponse = userMapper.toResponse(user, avatarUrl);
+                    return new UserWithAvatar(userResponse, avatarUrl);
                 })
                 .toList();
     }
@@ -54,7 +55,9 @@ public class UserAdminService extends UserServiceBase {
         User savedUser = userRepository.save(user);
 
         String avatarUrl = handleAvatar(savedUser, request.getAvatar());
-        return new UserWithAvatar(savedUser, avatarUrl);
+
+        UserResponse userResponse = userMapper.toResponse(savedUser, avatarUrl);
+        return new UserWithAvatar(userResponse, avatarUrl);
     }
 
     @Transactional

@@ -2,8 +2,10 @@ package com.pgh.huutinhdoor.service;
 
 import com.pgh.huutinhdoor.dto.request.user.ClientUserUpdateRequest;
 import com.pgh.huutinhdoor.dto.request.user.UserCreateRequest;
+import com.pgh.huutinhdoor.dto.response.UserResponse;
 import com.pgh.huutinhdoor.entity.Customer;
 import com.pgh.huutinhdoor.entity.User;
+import com.pgh.huutinhdoor.enums.UserRole;
 import com.pgh.huutinhdoor.exception.BadRequestException;
 import com.pgh.huutinhdoor.mapper.UserMapper;
 import com.pgh.huutinhdoor.repository.CustomerRepository;
@@ -18,15 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserClientService extends UserServiceBase {
 
     private final CustomerRepository customerRepository;
-    private final UserMapper userMapper;
 
     public UserClientService(UserRepository userRepository, ImageRepository imageRepository,
                              ImageService imageService, PasswordEncoder passwordEncoder,
                              CustomerRepository customerRepository, UserMapper userMapper) {
 
-        super(userRepository, imageRepository, imageService, passwordEncoder);
+        super(userRepository, imageRepository, imageService, passwordEncoder, userMapper);
         this.customerRepository = customerRepository;
-        this.userMapper = userMapper;
     }
 
     @Transactional(readOnly = true)
@@ -40,6 +40,8 @@ public class UserClientService extends UserServiceBase {
         checkDuplicate(request.getEmail(), request.getPhone(), null);
 
         User user = userMapper.toEntity(request);
+        user.setIsActive(true);
+        user.setRole(UserRole.USER);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
 
@@ -51,7 +53,8 @@ public class UserClientService extends UserServiceBase {
         User savedUser = userRepository.save(user);
 
         String avatarUrl = handleAvatar(savedUser, request.getAvatar());
-        return new UserWithAvatar(savedUser, avatarUrl);
+        UserResponse  userResponse = userMapper.toResponse(savedUser, avatarUrl);
+        return new UserWithAvatar(userResponse, avatarUrl);
     }
 
     @Transactional
@@ -62,7 +65,8 @@ public class UserClientService extends UserServiceBase {
         userRepository.save(user);
 
         String avatarUrl = handleAvatar(user, request.getAvatar());
-        return new UserWithAvatar(user, avatarUrl);
+        UserResponse  userResponse = userMapper.toResponse(user, avatarUrl);
+        return new UserWithAvatar(userResponse, avatarUrl);
     }
 
     @Transactional

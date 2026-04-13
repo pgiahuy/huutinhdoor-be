@@ -13,10 +13,21 @@ public class UserMapper {
                 .id(user.getId())
                 .phone(user.getPhone())
                 .email(user.getEmail())
-                .avatar(avatarUrl)
                 .role(user.getRole())
                 .customerId(
                         user.getCustomer() != null ? user.getCustomer().getId() : null
+                )
+                .build();
+    }
+
+    public UserResponse toResponseAvatar(UserResponse user, String avatarUrl) {
+        return UserResponse.builder()
+                .id(user.getId())
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .customerId(
+                        user.getCustomerId() != null ? user.getCustomerId() : null
                 )
                 .build();
     }
@@ -25,12 +36,6 @@ public class UserMapper {
         return User.builder()
                 .phone(request.getPhone())
                 .email(request.getEmail())
-                .role(
-                        request.getRole() != null ? request.getRole() : UserRole.USER
-                )
-                .isActive(
-                        request.getIsActive() != null ? request.getIsActive() : true
-                )
                 .build();
     }
 }

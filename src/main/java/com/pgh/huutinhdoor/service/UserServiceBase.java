@@ -1,12 +1,14 @@
 package com.pgh.huutinhdoor.service;
 
 import com.pgh.huutinhdoor.dto.request.user.UserUpdateRequest;
+import com.pgh.huutinhdoor.dto.response.UserResponse;
 import com.pgh.huutinhdoor.entity.Image;
 import com.pgh.huutinhdoor.entity.User;
 import com.pgh.huutinhdoor.enums.TargetType;
 import com.pgh.huutinhdoor.enums.UploadFolder;
 import com.pgh.huutinhdoor.exception.DuplicateResourceException;
 import com.pgh.huutinhdoor.exception.ResourceNotFoundException;
+import com.pgh.huutinhdoor.mapper.UserMapper;
 import com.pgh.huutinhdoor.repository.ImageRepository;
 import com.pgh.huutinhdoor.repository.UserRepository;
 import com.pgh.huutinhdoor.util.EntityUtil;
@@ -23,8 +25,9 @@ public abstract class UserServiceBase {
     protected final ImageRepository imageRepository;
     protected final ImageService imageService;
     protected final PasswordEncoder passwordEncoder;
+    protected final UserMapper userMapper;
 
-    public record UserWithAvatar(User user, String avatarUrl) {}
+    public record UserWithAvatar(UserResponse user, String avatarUrl) {}
 
 
     protected void copyAndEncodePassword(UserUpdateRequest request, User user) {
@@ -55,7 +58,9 @@ public abstract class UserServiceBase {
                 .findByTargetIdAndTargetTypeAndIsPrimaryTrue(id, TargetType.USER)
                 .map(Image::getUrl)
                 .orElse(GlobalConstants.USER_AVATAR);
-        return new UserWithAvatar(user, avatarUrl);
+
+        UserResponse userResponse = userMapper.toResponse(user, avatarUrl);
+        return new UserWithAvatar(userResponse, avatarUrl);
     }
 
     public UserWithAvatar update(Long id, UserUpdateRequest request) {
@@ -64,7 +69,8 @@ public abstract class UserServiceBase {
         copyAndEncodePassword(request, user);
         userRepository.save(user);
         String avatarUrl = handleAvatar(user, request.getAvatar());
-        return new UserWithAvatar(user, avatarUrl);
+        UserResponse userResponse = userMapper.toResponse(user, avatarUrl);
+        return new UserWithAvatar(userResponse, avatarUrl);
     }
 
     protected User findByIdOrThrow(Long id) {
